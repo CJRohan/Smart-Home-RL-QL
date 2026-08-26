@@ -39,7 +39,6 @@ class StateActionModel:
         A paused task keeps its remaining duration and can later be resumed.
         """
         state_definition = self.config["state_definition"]
-        assumptions = self.config["assumptions_to_confirm_before_training"]
 
         battery_bin = self.bin_number(
             battery_kwh,
@@ -47,11 +46,11 @@ class StateActionModel:
         )
         next_solar_bin = self.bin_number(
             next_period_solar_kwh,
-            assumptions["next_period_solar_bin_upper_bounds_kwh"],
+            state_definition["next_period_solar_bin_upper_bounds_kwh"],
         )
         later_solar_bin = self.bin_number(
             later_solar_until_sunset_kwh,
-            assumptions["remaining_day_solar_bin_upper_bounds_kwh"],
+            state_definition["remaining_day_solar_bin_upper_bounds_kwh"],
         )
         mandatory_demand_bin = self.bin_number(
             mandatory_next_period_kwh,

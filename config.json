@@ -80,14 +80,9 @@
       "mandatory_energy_need_next_period_bin",
       "energy_demand_after_next_period_until_09_00_bin"
     ],
-    "excluded_state_variables": [
-      "scooter_battery_level_bin"
-    ],
     "battery_level_bin_upper_bounds_kwh": [1.0, 2.5, 4.0, 6.0, 10.0],
     "mandatory_energy_next_period_bin_upper_bounds_kwh": [0.5, 1.0, 1.5, 2.0, 100.0],
-    "future_energy_until_09_00_bin_upper_bounds_kwh": [1.0, 1.5, 2.0, 3.0, 4.5, 100.0]
-  },
-  "assumptions_to_confirm_before_training": {
+    "future_energy_until_09_00_bin_upper_bounds_kwh": [1.0, 1.5, 2.0, 3.0, 4.5, 100.0],
     "next_period_solar_bin_upper_bounds_kwh": [1.0, 2.5, 4.0, 6.0, 10.0],
     "remaining_day_solar_bin_upper_bounds_kwh": [1.0, 2.5, 4.0, 6.0, 10.0],
     "action_controlled_appliances": [
@@ -104,5 +99,5 @@
     ],
     "meaning_of_turning_off_a_running_fixed_duration_appliance": "Pause the task and preserve its remaining time.",
     "initial_action_control_rule": "One valid switch action or do_nothing is selected per 30-minute decision period. Device switches persist until changed."
-  }
+  },
 }
