@@ -64,8 +64,14 @@ class SmartHomeEnvironment:
         state_before = self.state()
         row = self.scenario[self.period]
         self._apply_action(action)
+        if row["is_overnight"]:
+            self.device_status["generator"] = "off"
+            self.device_status["ac_heater"] = "off"
+            for name in ("laundry", "dishwasher", "oven"):
+                self.device_status[name] = self.device_status[name].replace("running_", "paused_")
         active = self._active_devices(row)
-        demand_kwh = self._demand_kwh(row, active)
+        requested = self._demand_by_appliance(row, active)
+        demand_kwh = sum(requested.values())
 
         # Solar charges the home battery first. Diesel charges it only when on.
         solar_kwh = row["actual_solar_kwh"]
@@ -74,28 +80,32 @@ class SmartHomeEnvironment:
             row["hours"],
             min(self.config["battery"]["capacity_kwh"], self.home_battery_kwh + solar_kwh),
         )
+        capacity = self.config["battery"]["capacity_kwh"]
+        available = min(capacity, self.home_battery_kwh + solar_kwh + generator_kwh)
+        served = self.energy_system.allocate_loads(available, requested)
         result = self.energy_system.update_home_battery(
-            self.home_battery_kwh, solar_kwh, generator_kwh, demand_kwh
+            self.home_battery_kwh, solar_kwh, generator_kwh, sum(served.values())
         )
+        unmet = {name: max(0.0, requested[name] - served[name]) for name in requested}
+        result["unmet_kwh"] = sum(unmet.values())
+        result["power_unavailable"] = result["unmet_kwh"] > 0
         self.home_battery_kwh = result["battery_after_kwh"]
 
-        # If all loads have power, running tasks use one period of their remaining time.
-        if not result["power_unavailable"]:
-            self._advance_running_tasks()
-            if active["scooter"]:
-                scooter_energy = row["scooter_actual_kw"] * row["hours"]
-                self.scooter_battery_kwh = self.energy_system.update_scooter_battery(
-                    self.scooter_battery_kwh, scooter_energy
-                )
-
+        # Progress belongs to the device actually supplied, not to all loads together.
+        for name in ("laundry", "dishwasher", "oven"):
+            if active[name] and unmet[name] > 0:
+                self.device_status[name] = self.device_status[name].replace("running_", "paused_")
+        self._advance_running_tasks()
+        self.scooter_battery_kwh = self.energy_system.update_scooter_battery(
+            self.scooter_battery_kwh, served["scooter"]
+        )
         if self.scooter_battery_kwh >= self.config["appliances"]["scooter"]["battery_capacity_kwh"]:
             self.device_status["scooter"] = "off"
-
-        # Stop the generator automatically when the home battery is full.
-        if self.home_battery_kwh >= self.config["battery"]["capacity_kwh"]:
+        # Stop at charge-time fullness, before appliances draw from the battery.
+        if available >= capacity:
             self.device_status["generator"] = "off"
-
-        reward = self._reward(row, active, generator_kwh, result["power_unavailable"])
+        fully_served = {name: active[name] and unmet[name] == 0 for name in active}
+        reward = self._reward(row, fully_served, generator_kwh, result["power_unavailable"])
         self.total_reward += reward
         self.period += 1
         self.finished = self.period == len(self.scenario)
@@ -105,6 +115,11 @@ class SmartHomeEnvironment:
             "solar_kwh": solar_kwh,
             "generator_kwh": generator_kwh,
             "demand_kwh": demand_kwh,
+            "requested_by_appliance_kwh": requested,
+            "served_by_appliance_kwh": served,
+            "unmet_by_appliance_kwh": unmet,
+            "shed_appliances": [name for name in unmet if unmet[name] > 0],
+            "generator_runtime_hours": generator_kwh / self.config["generator"]["power_kw"],
             **result,
         }
 
@@ -140,12 +155,16 @@ class SmartHomeEnvironment:
             ),
         }
 
-    def _demand_kwh(self, row, active):
-        total = 0.0
-        for appliance, is_active in active.items():
-            if is_active:
-                total += row[f"{appliance}_actual_kw"] * row["hours"]
-        return total
+    def _demand_by_appliance(self, row, active):
+        requested = {
+            name: row[f"{name}_actual_kw"] * row["hours"] if is_active else 0.0
+            for name, is_active in active.items()
+        }
+        requested["scooter"] = min(
+            requested["scooter"],
+            max(0.0, self.config["appliances"]["scooter"]["battery_capacity_kwh"] - self.scooter_battery_kwh),
+        )
+        return requested
 
     def _advance_running_tasks(self):
         for appliance in ("laundry", "dishwasher", "oven"):
@@ -155,10 +174,12 @@ class SmartHomeEnvironment:
             remaining = int(status.split("_")[1]) - 1
             if remaining > 0:
                 self.device_status[appliance] = f"running_{remaining}"
-            elif appliance == "oven" and self.oven_cycles_completed == 0:
-                self.oven_cycles_completed = 1
+            elif appliance == "oven" and self.oven_cycles_completed + 1 < self.config["appliances"]["oven"]["required_cycles"]:
+                self.oven_cycles_completed += 1
                 self.device_status[appliance] = "not_started"
             else:
+                if appliance == "oven":
+                    self.oven_cycles_completed += 1
                 self.device_status[appliance] = "completed"
 
     def _next_period_solar(self):
@@ -206,7 +227,7 @@ class SmartHomeEnvironment:
         reward = values["generator_cost_per_operating_hour"] * (
             generator_kwh / self.config["generator"]["power_kw"]
         )
-        if active["ac_heater"] and not power_unavailable:
+        if active["ac_heater"]:
             reward += values["ac_heater_comfort_per_served_period"]
         if power_unavailable:
             reward += values["battery_depleted_and_appliances_stop"]

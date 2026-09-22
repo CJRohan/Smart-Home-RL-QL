@@ -55,3 +55,27 @@ class EnergySystem:
         empty_space = max(0.0, scooter_size - scooter_before_kwh)
         accepted_kwh = min(supplied_charging_kwh, empty_space)
         return scooter_before_kwh + accepted_kwh
+
+    def allocate_loads(self, available_kwh, requested):
+        """Serve configured priority order; fixed tasks require a full time slice.
+
+        Once a requested load cannot be fully supplied, lower priorities receive
+        nothing. Unused energy stays in the battery for a later period.
+        """
+        order = self.config["load_shedding"]["priority_order"]
+        if len(order) != len(set(order)) or set(order) != set(requested):
+            raise ValueError("Priority order must contain every appliance exactly once")
+        served = dict.fromkeys(requested, 0.0)
+        blocked = False
+        for name in order:
+            need = requested[name]
+            if need <= 0 or blocked:
+                continue
+            if name in ("laundry", "dishwasher", "oven"):
+                supplied = need if need <= available_kwh else 0.0
+            else:
+                supplied = min(need, available_kwh)
+            served[name] = supplied
+            available_kwh -= supplied
+            blocked = supplied < need
+        return served

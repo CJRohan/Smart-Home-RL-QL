@@ -46,7 +46,7 @@ The generator has a fixed power. When it is on:
 
 `G_t = g_t × P_g × Δt`
 
-For the proposed example, generator power is 5 kW. A full battery must stop further charging, so a later implementation should prevent more generator energy than the free space in the home battery.
+Generator power is 5 kW. Actual G_t is capped to the empty battery space after solar charging. Runtime is G_t / 5 hours. The generator switch turns off when charging fills the battery, before appliance consumption, and is forced off overnight.
 
 ## 5. Home-battery balance
 
@@ -64,11 +64,11 @@ Extra energy cannot be stored:
 
 Then appliances use the battery:
 
-`B_{t+1} = max(0, B_after_charge − D_t)`
+`B_{t+1} = B_after_charge − Σ served_{a,t}`
 
 If the desired appliance energy is greater than the battery energy, the difference is unmet demand:
 
-`U_t = max(0, D_t − B_after_charge)`
+`U_t = D_t − Σ served_{a,t}`
 
 `U_t > 0` represents a battery-depletion / power-unavailability event. The detailed rule for which appliance loses supply first remains a modelling choice.
 
@@ -82,12 +82,12 @@ When `z_t = z_max`, scooter charging stops automatically. For the example scoote
 
 ## 7. Scheduling constraints
 
-The later environment must enforce these rules rather than merely rewarding them:
+The environment enforces these rules:
 
-- fixed-duration tasks continue until their required duration is complete;
+- fixed-duration tasks retain remaining duration when paused; only fully supplied periods reduce it;
 - a completed fixed-duration task stops automatically;
 - dishwasher cannot start before its allowed time;
-- oven runs in its required cooking windows / required cycles;
+- new oven cycles can start at the configured times; paused cycles can resume later during daytime;
 - TV/PC runs only in its permitted windows;
 - normal appliances and generator do not run after 23:00;
 - refrigerator continues overnight;

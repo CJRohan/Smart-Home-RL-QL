@@ -99,7 +99,8 @@ class StateActionModel:
         self._add_fixed_task_actions(
             actions,
             "oven",
-            clock_time in self.config["appliances"]["oven"]["allowed_start_times"] and not is_overnight,
+            (clock_time in self.config["appliances"]["oven"]["allowed_start_times"]
+             or device_status["oven"].startswith("paused_")) and not is_overnight,
             device_status["oven"],
         )
         self._add_switch_actions(actions, "ac_heater", not is_overnight, device_status["ac_heater"])
