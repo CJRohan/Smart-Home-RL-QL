@@ -18,12 +18,11 @@ Resolved: single-day planning; fridge before fixed tasks before TV/AC; generator
 
 Assumptions for further review:
 
-1. Fixed-task ties use laundry, dishwasher, oven; comfort ties use TV before AC. Should deadlines decide ties?
-2. Scooter was omitted from the priority answer. It is placed last.
-3. Fixed tasks require full half-hour slices; no energy is consumed for an unsupplied slice. Strict priority blocks lower loads even when residual stored energy remains. Is partial-slice task operation needed later?
-4. Zero solar shares the first bin following Part B's explicit arrays. Should zero instead have a separate sixth category?
-5. New oven cycles remain agent choices at 11:30 or 17:00; paused cycles can resume later during daytime.
-6. The overnight aggregate cannot detect shortages before morning solar arrives. Finer time resolution is future work.
-7. Supplied powers, durations and noise ranges are retained. Calibration against measured data is future work.
+1. Fixed-task ties use laundry, dishwasher, oven; comfort ties use TV before AC. Can deadlines be used to further decide ties?
+2. Scooter is placed last in the priority.
+3. Zero solar shares the first bin.
+4. New oven cycles remain agent choices at 11:30 or 17:00; paused cycles can resume later during daytime.
+5. The overnight aggregate cannot detect shortages before morning solar arrives. Finer time resolution is future work.
+6. Supplied powers, durations and noise ranges are retained. Calibration against measured data is future work.
 
-The existing compact state omits explicit AC/scooter switches and oven cycle count. Its adequacy as a Markov state should be reviewed before formal experiments; this feedback update does not redesign it. No training performance is claimed.
+The existing compact state omits explicit AC/scooter switches and oven cycle count.
