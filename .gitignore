@@ -1,6 +1,16 @@
 .idea*
 fee*
 tes*
-# Local run artifacts and Python caches
-/outputs/
+# Python caches
 __pycache__/
+
+# Keep only compact, reviewable run summaries and exact settings in Git.
+/outputs/*
+!/outputs/*/
+/outputs/*/*
+!/outputs/*/summary.md
+!/outputs/*/evaluation_summary.json
+!/outputs/*/run_manifest.json
+!/outputs/*/invocation.json
+!/outputs/*/run_command.txt
+!/outputs/*/config_snapshot.json

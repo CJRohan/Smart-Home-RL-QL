@@ -1,0 +1,55 @@
+{
+  "status": "completed",
+  "started_utc": "2026-09-22T14:15:30.551309+00:00",
+  "completed_utc": "2026-09-22T14:15:55.433582+00:00",
+  "python": "3.12.14",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "training_cases": 1000,
+  "evaluation_cases": 1000,
+  "epochs": 1,
+  "training_episodes": 1000,
+  "training_updates": 29000,
+  "seeds": {
+    "training_data": 42,
+    "evaluation_data": 43,
+    "agent": 44,
+    "shuffle": 45,
+    "random_baseline": 46
+  },
+  "q_table_entries": 4488,
+  "unique_states": 1577,
+  "single_visit_state_action_fraction": 0.46078431372549017,
+  "timings": {
+    "generation_and_dataset_write_seconds": 3.125894700002391,
+    "training_seconds": 3.199274599999626,
+    "evaluation_including_trace_write_seconds": 17.808251099999325,
+    "training_updates_per_second": 9064.554821272106,
+    "total_seconds_before_manifest_write": 24.882147399999667
+  },
+  "evaluation_seconds_by_policy": {
+    "q_learning": 5.396979900000588,
+    "rule_based": 3.962255799997365,
+    "random": 4.222631299999193,
+    "do_nothing": 4.2263841000021785
+  },
+  "source_sha256": {
+    "appliance_model.py": "428be38e85b66a6476a51e599e90da7ea2f690d8b906791bf8e2793dfcf6d860",
+    "check_model_structure.py": "5259aa1abcac8d374f334b56ba4e53d03fd279d979341dd388fbab42f30d8e88",
+    "config_loader.py": "3a23684a518ec883d39fe46eecfc711320133b253028e1d8b7f78933d79b2e64",
+    "energy_system.py": "62548e53cde9447fc927b5ed7e01331e5a14197688450cbb4942c53c99a23601",
+    "q_learning_agent.py": "2ac0b3c918c3bc9317320d001c9c24b4ab6329e0cd9a32642349f7301a00f09e",
+    "scenario_generator.py": "12f931614f6837de783154c130c7168ff6e4598c5a567dca5994dd87f8534b9d",
+    "smart_home_environment.py": "cd4f3d50bc8c405d61d4a70833d34449439a461e73a171f414e3111fdf82e412",
+    "solar_model.py": "82c6193f117eddf9def96868f9192e2e0727b9fa6cfc2736be0f4e3e4401dc46",
+    "state_action_model.py": "82d0c30f33b1a04d3f19965c8690b19c17878ac3570c8cd72f0d0941e0e0dfca",
+    "time_blocks.py": "b5effdb6e8e3ca7de6ee5524478886814aa92bf32d6c9ffafd3517475db5aa85",
+    "train_q_learning.py": "a1d079473cb212b3c8d7b5f9cf3f07f6772e0523f9b021c934149231e384a66f"
+  },
+  "dataset_sha256": {
+    "training_cases.json": "4643ec43eb4e2a0265dce35359fcff2854d87547d58b1f9052f4ff793c9db077",
+    "evaluation_cases.json": "c53857bd3aff8e72bf0e42c98010b06432d32f31e2cdff0f0dcf40984187e89d"
+  },
+  "evaluation_exploration_epsilon": 0.0,
+  "evaluation_tie_break": "first valid action with maximal Q",
+  "limitation": "One training seed; compact state aliases physical histories; demand summaries use future realised powers."
+}

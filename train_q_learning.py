@@ -4,12 +4,15 @@ Run `python train_q_learning.py`; uses only the Python standard library.
 """
 import argparse
 import csv
+import gzip
 import hashlib
 import json
 import math
 import platform
 import random
 import statistics
+import subprocess
+import sys
 import time
 from collections import Counter
 from datetime import datetime, timezone
@@ -43,7 +46,8 @@ def generate_cases(config, count, seed, split):
 
 
 def save_cases(folder, split, cases):
-    write_json(folder / f"{split}_cases.json", cases)
+    with gzip.open(folder / f"{split}_cases.json.gz", "wt", encoding="utf-8", compresslevel=6) as stream:
+        json.dump(cases, stream, allow_nan=False)
     write_csv(folder / f"{split}_cases.csv", [
         dict(case_id=case["case_id"], **row) for case in cases for row in case["rows"]])
 
@@ -179,7 +183,7 @@ def summarize(rows):
     return summaries
 
 
-def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_root=None):
+def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_root=None, command_args=None):
     """Save a complete pilot run and return (agent, output_directory)."""
     started = time.perf_counter()
     utc_start = datetime.now(timezone.utc)
@@ -193,6 +197,19 @@ def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_r
         f"{utc_start.strftime('%Y%m%dT%H%M%S_%fZ')}_qlearning_{config['experiment']['month']}"
         f"_train{number_of_days}_test{test_cases}_epochs{epochs}_seed{seed}")
     folder.mkdir(parents=True, exist_ok=False)
+    effective_args = ["--train-cases", str(number_of_days), "--test-cases", str(test_cases),
+                      "--epochs", str(epochs), "--seed", str(seed)]
+    if output_root is not None:
+        effective_args.extend(["--output-root", str(output_root)])
+    supplied_args = list(command_args) if command_args is not None else effective_args
+    invocation = dict(arguments=supplied_args, arguments_text=subprocess.list2cmdline(supplied_args),
+                      effective_arguments=effective_args,
+                      command=subprocess.list2cmdline(["python", "train_q_learning.py", *supplied_args]),
+                      effective_command=subprocess.list2cmdline(["python", "train_q_learning.py", *effective_args]),
+                      python_executable=sys.executable,
+                      invocation_type="command_line" if command_args is not None else "python_function")
+    write_json(folder / "invocation.json", invocation)
+    (folder / "run_command.txt").write_text(invocation["command"] + "\n", encoding="utf-8")
     timings = {}
     seeds = dict(training_data=seed, evaluation_data=seed + 1, agent=seed + 2,
                  shuffle=seed + 3, random_baseline=seed + 4)
@@ -231,7 +248,7 @@ def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_r
             metrics.update(episode=index + 1, epoch=epoch, epsilon=epsilon,
                            q_table_entries=len(agent.q_table), elapsed_training_seconds=time.perf_counter() - stage)
             training_metrics.append(metrics)
-            if (index + 1) % 100 == 0 or index + 1 == total_episodes:
+            if (index + 1) % max(100, total_episodes // 100) == 0 or index + 1 == total_episodes:
                 print(f"Training {index + 1}/{total_episodes}: epsilon={epsilon:.3f}, Q entries={len(agent.q_table)}", flush=True)
     timings["training_seconds"] = time.perf_counter() - stage
     write_csv(folder / "training_episodes.csv", training_metrics)
@@ -242,7 +259,7 @@ def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_r
     frozen = dict(agent.q_table)
     evaluations = []
     policy_timings = {}
-    with (folder / "evaluation_steps.jsonl").open("w", encoding="utf-8") as trace:
+    with gzip.open(folder / "evaluation_steps.jsonl.gz", "wt", encoding="utf-8", compresslevel=6) as trace:
         for policy in ("q_learning", "rule_based", "random", "do_nothing"):
             stage = time.perf_counter()
             rng = random.Random(seeds["random_baseline"])
@@ -262,7 +279,7 @@ def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_r
     write_json(folder / "evaluation_summary.json", dict(policies=summaries,
         paired_return_difference_qlearning_minus_baseline=comparisons,
         uncertainty_note="Intervals across held-out days for ONE fitted policy, not across training seeds. Continuous metrics use normal-approximation mean intervals (unreliable for small samples); binary completion/success rates use Wilson intervals."))
-    summary = ["# Single-day Q-learning pilot", "",
+    summary = ["# Single-day Q-learning pilot", "", "Command: `" + invocation["command"] + "`", "",
                f"Training: {number_of_days} unique cases x {epochs} passes = {total_episodes} episodes.",
                f"Evaluation: {test_cases} independent cases, identical for every policy.", "",
                "| Policy | Mean return | Daily success | Generator h/day | Unmet kWh/day |",
@@ -282,10 +299,10 @@ def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_r
                     f"Evaluation plus trace writing: {timings['evaluation_including_trace_write_seconds']:.3f} seconds."])
     (folder / "summary.md").write_text("\n".join(summary) + "\n", encoding="utf-8")
     dataset_hashes = {name: hashlib.sha256((folder / name).read_bytes()).hexdigest()
-                      for name in ("training_cases.json", "evaluation_cases.json")}
+                      for name in ("training_cases.json.gz", "evaluation_cases.json.gz")}
     timings["training_updates_per_second"] = sum(len(case["rows"]) for case in training) * epochs / timings["training_seconds"]
     timings["total_seconds_before_manifest_write"] = time.perf_counter() - started
-    write_json(folder / "run_manifest.json", dict(status="completed", started_utc=utc_start.isoformat(),
+    write_json(folder / "run_manifest.json", dict(status="completed", invocation=invocation, started_utc=utc_start.isoformat(),
         completed_utc=datetime.now(timezone.utc).isoformat(), python=platform.python_version(),
         platform=platform.platform(), training_cases=number_of_days, evaluation_cases=test_cases, epochs=epochs,
         training_episodes=total_episodes, training_updates=sum(visits.values()), seeds=seeds,
@@ -315,4 +332,4 @@ if __name__ == "__main__":
     parser.add_argument("--output-root", type=Path, default=None, help="Default: outputs beside this script")
     args = parser.parse_args()
     train(args.train_cases, test_cases=args.test_cases, epochs=args.epochs,
-          seed=args.seed, output_root=args.output_root)
+          seed=args.seed, output_root=args.output_root, command_args=sys.argv[1:])

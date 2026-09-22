@@ -26,19 +26,20 @@ Example folder name: `outputs/20260922T150000_123456Z_qlearning_June_train1000_t
 
 | Output | Contents and purpose |
 |---|---|
+| `run_command.txt`, `invocation.json` | Exact supplied command and argument list, resolved arguments, and Python executable; also recorded in the manifest. |
 | `config_snapshot.json` | Exact physical parameters, bins, rewards and learning settings used. CLI counts and seeds are recorded in the manifest. |
 | `source/` | Python source snapshot for this run, excluding local tests. |
 | `run_manifest.json` | Successful completion marker; UTC start/end, all seeds, actual case/episode/update counts, Python/platform, Q-table size, source and dataset SHA-256 hashes, stage runtimes and update throughput. |
-| `training_cases.json` and `.csv` | All generated training inputs, 1,000 cases / 29,000 time rows by default. JSON preserves per-case structure; CSV is convenient for inspection. |
-| `evaluation_cases.json` and `.csv` | Separate generated inputs never used for Q updates. Same evaluation cases used for every comparison policy. |
+| `training_cases.json.gz` and `.csv` | All generated training inputs, 1,000 cases / 29,000 time rows by default. JSON preserves per-case structure; CSV is convenient for inspection. |
+| `evaluation_cases.json.gz` and `.csv` | Separate generated inputs never used for Q updates. Same evaluation cases used for every comparison policy. |
 | `training_episodes.csv` | One row per training episode: case ID, pass, epsilon, reward, physical outcomes, completion flags, mean absolute TD error, Q-table size and elapsed training seconds. |
 | `q_table.json` | Learned state/action values, update visit counts, state-encoding/version metadata. Readable and reloadable, without unsafe pickle files. |
 | `evaluation_episodes.csv` | One row per evaluation day and policy: 4,000 rows for default settings. |
-| `evaluation_steps.jsonl` | Every evaluation decision: 116,000 lines by default. Includes state, action, reward, battery before/after, solar/generator energy, per-appliance requested/served/unmet energy, switches and task progress. This may be a few hundred MB. |
+| `evaluation_steps.jsonl.gz` | Every evaluation decision: 116,000 lines by default. Includes state, action, reward, battery before/after, solar/generator energy, per-appliance requested/served/unmet energy, switches and task progress. Gzip compression preserves every record while reducing file size for repository uploads. |
 | `evaluation_summary.json` | Per-policy means, sample standard deviations, medians, 10th/90th order-statistic percentiles, approximate mean confidence intervals, and paired reward differences against each baseline. |
 | `summary.md` | Readable comparison table, state-coverage warning, training/evaluation timing and interpretation limits. |
 
-The manifest is written only after successful completion. A folder without it is an incomplete run. Existing run folders are never overwritten. `outputs/`, local tests and the existing private explanation stay ignored by Git. No commit or upload is performed by the runner.
+The manifest is written only after successful completion. A folder without it is an incomplete run. Existing run folders are never overwritten. Only `summary.md`, `evaluation_summary.json`, `run_manifest.json`, `invocation.json`, `run_command.txt` and `config_snapshot.json` within each output run are included by Git. Generated cases, detailed traces, episode logs, Q-tables and source snapshots stay local, as do local tests and the private explanation. No commit or upload is performed by the runner.
 
 To reload for analysis in Python:
 

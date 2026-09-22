@@ -59,4 +59,4 @@ This is a structural check only. It does not generate files, train an agent, or 
 
 ## Reproducible training pilot
 
-Run `python train_q_learning.py` to generate and save 1,000 training days and 1,000 held-out evaluation days, train for one pass, and compare Q-learning against three baseline policies. Runs are saved under `./outputs` in timestamped folders and ignored by Git. See [training_plan.md](training_plan.md) for output definitions, metrics, runtime measurement, limitations and next experiments.
+Run `python train_q_learning.py` to generate and save 1,000 training days and 1,000 held-out evaluation days, train for one pass, and compare Q-learning against three baseline policies. Runs are saved under `./outputs` in timestamped folders. Only summaries, exact commands, configuration and runtime metadata are included by Git; generated data, traces, episode logs and Q-tables remain local. See [training_plan.md](training_plan.md) for output definitions, metrics, runtime measurement, limitations and next experiments.

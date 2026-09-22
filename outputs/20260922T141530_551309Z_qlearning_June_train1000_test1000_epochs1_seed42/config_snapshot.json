@@ -1,0 +1,275 @@
+{
+  "experiment": {
+    "seed": 42,
+    "month": "June",
+    "training_instances": 1000,
+    "test_instances": 1000,
+    "day_start": "09:00",
+    "day_end": "23:00",
+    "daytime_period_minutes": 30,
+    "overnight_period_hours": 10.0
+  },
+  "solar": {
+    "panel_area_m2": 10.0,
+    "weather_coefficient": 1.0,
+    "actual_noise_low": -0.2,
+    "actual_noise_high": 0.0,
+    "monthly_maximum": {
+      "January": {
+        "peak_w_per_m2": 60,
+        "sunrise": "08:00",
+        "sunset": "16:00"
+      },
+      "February": {
+        "peak_w_per_m2": 100,
+        "sunrise": "07:20",
+        "sunset": "17:20"
+      },
+      "March": {
+        "peak_w_per_m2": 150,
+        "sunrise": "06:20",
+        "sunset": "18:10"
+      },
+      "April": {
+        "peak_w_per_m2": 185,
+        "sunrise": "05:40",
+        "sunset": "20:00"
+      },
+      "May": {
+        "peak_w_per_m2": 200,
+        "sunrise": "05:00",
+        "sunset": "20:45"
+      },
+      "June": {
+        "peak_w_per_m2": 210,
+        "sunrise": "04:45",
+        "sunset": "21:20"
+      },
+      "July": {
+        "peak_w_per_m2": 205,
+        "sunrise": "05:00",
+        "sunset": "21:05"
+      },
+      "August": {
+        "peak_w_per_m2": 190,
+        "sunrise": "05:45",
+        "sunset": "20:20"
+      },
+      "September": {
+        "peak_w_per_m2": 155,
+        "sunrise": "06:30",
+        "sunset": "19:15"
+      },
+      "October": {
+        "peak_w_per_m2": 110,
+        "sunrise": "07:15",
+        "sunset": "18:00"
+      },
+      "November": {
+        "peak_w_per_m2": 70,
+        "sunrise": "07:30",
+        "sunset": "16:30"
+      },
+      "December": {
+        "peak_w_per_m2": 45,
+        "sunrise": "08:00",
+        "sunset": "15:50"
+      }
+    },
+    "time_multiplier": {
+      "04:30": 0.0,
+      "05:00": 0.01,
+      "05:30": 0.03,
+      "06:00": 0.06,
+      "06:30": 0.1,
+      "07:00": 0.16,
+      "07:30": 0.24,
+      "08:00": 0.34,
+      "08:30": 0.46,
+      "09:00": 0.58,
+      "09:30": 0.69,
+      "10:00": 0.79,
+      "10:30": 0.87,
+      "11:00": 0.93,
+      "11:30": 0.97,
+      "12:00": 0.99,
+      "12:30": 1.0,
+      "13:00": 1.0,
+      "13:30": 0.99,
+      "14:00": 0.97,
+      "14:30": 0.93,
+      "15:00": 0.87,
+      "15:30": 0.79,
+      "16:00": 0.69,
+      "16:30": 0.58,
+      "17:00": 0.46,
+      "17:30": 0.34,
+      "18:00": 0.24,
+      "18:30": 0.16,
+      "19:00": 0.1,
+      "19:30": 0.06,
+      "20:00": 0.03,
+      "20:30": 0.01,
+      "21:00": 0.0,
+      "21:30": 0.0
+    }
+  },
+  "battery": {
+    "capacity_kwh": 10.0,
+    "initial_energy_kwh": 5.0
+  },
+  "generator": {
+    "power_kw": 5.0,
+    "stops_when_battery_full": true,
+    "allowed_overnight": false
+  },
+  "appliance_noise": {
+    "low": -0.15,
+    "high": 0.15
+  },
+  "appliances": {
+    "refrigerator": {
+      "power_kw": 0.08,
+      "schedule": "always"
+    },
+    "tv_pc": {
+      "power_kw": 0.1,
+      "schedule": [
+        [
+          "10:00",
+          "12:00"
+        ],
+        [
+          "14:00",
+          "17:00"
+        ],
+        [
+          "21:00",
+          "23:00"
+        ]
+      ]
+    },
+    "laundry": {
+      "power_kw": 0.7,
+      "duration_periods": 3,
+      "required_cycles": 1,
+      "deadline": "23:00"
+    },
+    "dishwasher": {
+      "power_kw": 1.5,
+      "duration_periods": 3,
+      "required_cycles": 1,
+      "earliest_start": "20:00",
+      "deadline": "23:00"
+    },
+    "ac_heater": {
+      "power_kw": 2.5
+    },
+    "oven": {
+      "power_kw": 2.0,
+      "duration_periods": 2,
+      "required_cycles": 2,
+      "allowed_start_times": [
+        "11:30",
+        "17:00"
+      ]
+    },
+    "scooter": {
+      "power_kw": 0.3,
+      "battery_capacity_kwh": 2.0,
+      "earliest_start": "17:00",
+      "overnight_allowed": true,
+      "stops_when_full": true
+    }
+  },
+  "reward_values": {
+    "generator_cost_per_operating_hour": -10.0,
+    "missed_laundry_deadline": -20.0,
+    "missed_dishwasher_deadline": -20.0,
+    "missed_oven_cycle": -30.0,
+    "scooter_shortfall_per_kwh": -20.0,
+    "ac_heater_comfort_per_served_period": 2.0,
+    "battery_depleted_and_appliances_stop": -100.0
+  },
+  "q_learning_parameters": {
+    "learning_rate": 0.15,
+    "discount_factor": 0.98,
+    "epsilon_start": 1.0,
+    "epsilon_end": 0.1
+  },
+  "state_definition": {
+    "included_state_variables": [
+      "current_day",
+      "current_time_block",
+      "home_battery_level_bin",
+      "generator_status",
+      "running_fixed_duration_appliances_and_remaining_time",
+      "ongoing_and_remaining_tasks",
+      "predicted_solar_energy_next_period_bin",
+      "predicted_solar_energy_after_next_period_until_sunset_bin",
+      "mandatory_energy_need_next_period_bin",
+      "energy_demand_after_next_period_until_09_00_bin"
+    ],
+    "battery_level_bin_upper_bounds_kwh": [
+      1.0,
+      2.5,
+      4.0,
+      6.0,
+      10.0
+    ],
+    "mandatory_energy_next_period_bin_upper_bounds_kwh": [
+      0.5,
+      1.0,
+      1.5,
+      2.0,
+      100.0
+    ],
+    "future_energy_until_09_00_bin_upper_bounds_kwh": [
+      1.0,
+      1.5,
+      2.0,
+      3.0,
+      4.5,
+      100.0
+    ],
+    "next_period_solar_bin_upper_bounds_kwh": [
+      0.2,
+      0.4,
+      0.6,
+      0.8,
+      100.0
+    ],
+    "remaining_day_solar_bin_upper_bounds_kwh": [
+      2.0,
+      4.0,
+      6.0,
+      9.0,
+      100.0
+    ],
+    "action_controlled_appliances": [
+      "generator",
+      "laundry",
+      "dishwasher",
+      "oven",
+      "ac_heater",
+      "scooter"
+    ],
+    "automatic_appliances_not_directly_controlled": [
+      "refrigerator",
+      "tv_pc"
+    ],
+    "meaning_of_turning_off_a_running_fixed_duration_appliance": "Pause the task and preserve its remaining time.",
+    "initial_action_control_rule": "One valid switch action or do_nothing is selected per 30-minute decision period. Device switches persist until changed."
+  },
+  "load_shedding": {
+    "priority_order": [
+      "refrigerator",
+      "laundry",
+      "dishwasher",
+      "oven",
+      "tv_pc",
+      "ac_heater",
+      "scooter"
+    ]
+  }
+}

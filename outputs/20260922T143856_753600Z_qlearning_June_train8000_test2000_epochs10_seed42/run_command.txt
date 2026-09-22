@@ -1,0 +1,1 @@
+python train_q_learning.py --train-cases 8000 --test-cases 2000 --epochs 10 --seed 42

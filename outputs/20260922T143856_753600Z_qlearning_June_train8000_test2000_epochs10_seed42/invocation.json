@@ -1,0 +1,27 @@
+{
+  "arguments": [
+    "--train-cases",
+    "8000",
+    "--test-cases",
+    "2000",
+    "--epochs",
+    "10",
+    "--seed",
+    "42"
+  ],
+  "arguments_text": "--train-cases 8000 --test-cases 2000 --epochs 10 --seed 42",
+  "effective_arguments": [
+    "--train-cases",
+    "8000",
+    "--test-cases",
+    "2000",
+    "--epochs",
+    "10",
+    "--seed",
+    "42"
+  ],
+  "command": "python train_q_learning.py --train-cases 8000 --test-cases 2000 --epochs 10 --seed 42",
+  "effective_command": "python train_q_learning.py --train-cases 8000 --test-cases 2000 --epochs 10 --seed 42",
+  "python_executable": "C:\\Users\\Marcin\\Documents\\ChatGPT\\RL predict power consumption\\.venv\\Scripts\\python.exe",
+  "invocation_type": "command_line"
+}
