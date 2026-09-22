@@ -34,3 +34,4 @@ class QLearningAgent:
         )
         target = reward + self.discount_factor * best_future
         self.q_table[(state, action)] = old_value + self.learning_rate * (target - old_value)
+        return target - old_value  # Temporal-difference error for training diagnostics.

@@ -1,3 +1,6 @@
 .idea*
 fee*
 tes*
+# Local run artifacts and Python caches
+/outputs/
+__pycache__/

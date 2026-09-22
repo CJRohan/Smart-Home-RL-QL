@@ -4,7 +4,7 @@ This project models an off-grid home with solar generation, a diesel generator, 
 
 ## Current status
 
-The model structure, scenario generator, environment, state/action design, and a basic tabular Q-learning agent are implemented. The project has not yet generated a formal dataset, trained a final policy, or reported experimental results.
+The model structure, scenario generator, environment, state/action design, and a basic tabular Q-learning agent are implemented. The training runner saves reproducible pilot datasets, a learned Q-table and held-out evaluation results. A final validated policy and formal experimental conclusions remain future work.
 
 ## Energy flow
 
@@ -29,7 +29,7 @@ There is no external electricity grid. Solar and diesel energy charge the home b
 | `state_action_model.py` | Builds discrete Q-learning states and lists valid actions for each period. |
 | `smart_home_environment.py` | Applies actions, pauses/resumes fixed-duration tasks, and performs each time-step energy balance. |
 | `q_learning_agent.py` | Basic tabular Q-learning implementation using only the Python standard library. |
-| `train_q_learning.py` | Training loop; included for the next stage and not run as part of this repository update. |
+| `train_q_learning.py` | Generates saved cases, trains Q-learning and evaluates frozen policies with labelled outputs and runtimes. |
 | `check_model_structure.py` | Prints a small visible check of time blocks, solar, diesel, battery, state, and actions. |
 | `model_notes.md` | Configuration decisions and modelling assumptions. |
 | `modelling_questions.md` | Remaining questions to resolve before formal experiments. |
@@ -56,3 +56,7 @@ This is a structural check only. It does not generate files, train an agent, or 
 2. Review the remaining assumptions in `model_notes.md` and `modelling_questions.md`.
 3. Run the basic Q-learning training loop.
 4. Evaluate the learned policy on the saved test scenarios.
+
+## Reproducible training pilot
+
+Run `python train_q_learning.py` to generate and save 1,000 training days and 1,000 held-out evaluation days, train for one pass, and compare Q-learning against three baseline policies. Runs are saved under `./outputs` in timestamped folders and ignored by Git. See [training_plan.md](training_plan.md) for output definitions, metrics, runtime measurement, limitations and next experiments.

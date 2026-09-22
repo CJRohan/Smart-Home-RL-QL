@@ -1,8 +1,8 @@
 # Model notes
 
-This repository contains configuration, scenario generation, a physical single-day environment and basic tabular Q-learning. Regression tests have been run, but no formal dataset or trained policy is produced by this update.
+This repository contains configuration, scenario generation, a physical single-day environment and basic tabular Q-learning. The training runner generates reproducible pilot datasets and a learned Q-table; this is not yet a final validated policy.
 
-Read `feedback_implementation.md` for the professor feedback, exact bin intervals, priority rules, energy examples and verification.
+See `training_plan.md` for the reproducible training pilot, saved outputs and evaluation protocol.
 
 ## Configuration retained
 
