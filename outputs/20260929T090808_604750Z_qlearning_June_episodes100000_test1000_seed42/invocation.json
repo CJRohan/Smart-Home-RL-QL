@@ -1,0 +1,16 @@
+{
+  "arguments": [],
+  "arguments_text": "",
+  "effective_arguments": [
+    "--train-episodes",
+    "100000",
+    "--test-cases",
+    "1000",
+    "--seed",
+    "42"
+  ],
+  "command": "python train_q_learning.py",
+  "effective_command": "python train_q_learning.py --train-episodes 100000 --test-cases 1000 --seed 42",
+  "python_executable": "/Users/rohanchinyajagadeesha/miniforge3/bin/python",
+  "invocation_type": "command_line"
+}
