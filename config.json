@@ -2,7 +2,7 @@
   "experiment": {
     "seed": 42,
     "month": "June",
-    "training_instances": 1000,
+    "training_episodes": 100000,
     "test_instances": 1000,
     "day_start": "09:00",
     "day_end": "23:00",

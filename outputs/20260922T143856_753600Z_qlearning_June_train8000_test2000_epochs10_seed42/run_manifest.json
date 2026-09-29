@@ -1,0 +1,82 @@
+{
+  "status": "completed",
+  "invocation": {
+    "arguments": [
+      "--train-cases",
+      "8000",
+      "--test-cases",
+      "2000",
+      "--epochs",
+      "10",
+      "--seed",
+      "42"
+    ],
+    "arguments_text": "--train-cases 8000 --test-cases 2000 --epochs 10 --seed 42",
+    "effective_arguments": [
+      "--train-cases",
+      "8000",
+      "--test-cases",
+      "2000",
+      "--epochs",
+      "10",
+      "--seed",
+      "42"
+    ],
+    "command": "python train_q_learning.py --train-cases 8000 --test-cases 2000 --epochs 10 --seed 42",
+    "effective_command": "python train_q_learning.py --train-cases 8000 --test-cases 2000 --epochs 10 --seed 42",
+    "python_executable": "C:\\Users\\Marcin\\Documents\\ChatGPT\\RL predict power consumption\\.venv\\Scripts\\python.exe",
+    "invocation_type": "command_line"
+  },
+  "started_utc": "2026-09-22T14:38:56.753600+00:00",
+  "completed_utc": "2026-09-22T14:46:34.421136+00:00",
+  "python": "3.12.14",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "training_cases": 8000,
+  "evaluation_cases": 2000,
+  "epochs": 10,
+  "training_episodes": 80000,
+  "training_updates": 2320000,
+  "seeds": {
+    "training_data": 42,
+    "evaluation_data": 43,
+    "agent": 44,
+    "shuffle": 45,
+    "random_baseline": 46
+  },
+  "q_table_entries": 34992,
+  "unique_states": 7695,
+  "single_visit_state_action_fraction": 0.2735482395976223,
+  "timings": {
+    "generation_and_dataset_write_seconds": 38.96057610000207,
+    "training_seconds": 361.3571207999994,
+    "evaluation_including_trace_write_seconds": 52.9927436999933,
+    "training_updates_per_second": 6420.241546268165,
+    "total_seconds_before_manifest_write": 457.6678150000007
+  },
+  "evaluation_seconds_by_policy": {
+    "q_learning": 12.7357869999978,
+    "rule_based": 12.640293699998438,
+    "random": 14.329021800000191,
+    "do_nothing": 13.28764119999687
+  },
+  "source_sha256": {
+    "appliance_model.py": "428be38e85b66a6476a51e599e90da7ea2f690d8b906791bf8e2793dfcf6d860",
+    "check_model_structure.py": "5259aa1abcac8d374f334b56ba4e53d03fd279d979341dd388fbab42f30d8e88",
+    "config_loader.py": "3a23684a518ec883d39fe46eecfc711320133b253028e1d8b7f78933d79b2e64",
+    "energy_system.py": "62548e53cde9447fc927b5ed7e01331e5a14197688450cbb4942c53c99a23601",
+    "q_learning_agent.py": "2ac0b3c918c3bc9317320d001c9c24b4ab6329e0cd9a32642349f7301a00f09e",
+    "scenario_generator.py": "12f931614f6837de783154c130c7168ff6e4598c5a567dca5994dd87f8534b9d",
+    "smart_home_environment.py": "cd4f3d50bc8c405d61d4a70833d34449439a461e73a171f414e3111fdf82e412",
+    "solar_model.py": "82c6193f117eddf9def96868f9192e2e0727b9fa6cfc2736be0f4e3e4401dc46",
+    "state_action_model.py": "82d0c30f33b1a04d3f19965c8690b19c17878ac3570c8cd72f0d0941e0e0dfca",
+    "time_blocks.py": "b5effdb6e8e3ca7de6ee5524478886814aa92bf32d6c9ffafd3517475db5aa85",
+    "train_q_learning.py": "0433814b3da22f50a1a088cd28e03b027d60b62a0b73e587f8238187c12ccffd"
+  },
+  "dataset_sha256": {
+    "training_cases.json.gz": "e74fe734bca39b55c92899d2b397298c531843bab1698021d6d57587e4c561ab",
+    "evaluation_cases.json.gz": "dd0c9f2775d6a5ce8144cfc9fd1a41095c3fd555f093b710e8061df4185f9a70"
+  },
+  "evaluation_exploration_epsilon": 0.0,
+  "evaluation_tie_break": "first valid action with maximal Q",
+  "limitation": "One training seed; compact state aliases physical histories; demand summaries use future realised powers."
+}

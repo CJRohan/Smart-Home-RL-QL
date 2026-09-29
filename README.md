@@ -59,4 +59,12 @@ This is a structural check only. It does not generate files, train an agent, or 
 
 ## Reproducible training pilot
 
-Run `python train_q_learning.py` to generate and save 1,000 training days and 1,000 held-out evaluation days, train for one pass, and compare Q-learning against three baseline policies. Runs are saved under `./outputs` in timestamped folders. Only summaries, exact commands, configuration and runtime metadata are included by Git; generated data, traces, episode logs and Q-tables remain local. See [training_plan.md](training_plan.md) for output definitions, metrics, runtime measurement, limitations and next experiments.
+Run `python train_q_learning.py` to generate and save 100,000 independent training days and 1,000 held-out evaluation days, train exactly once on each training day, and compare Q-learning against three baseline policies. Runs are saved under `./outputs` in timestamped folders. Only summaries, exact commands, configuration and runtime metadata are included by Git; generated data, traces, episode logs and Q-tables remain local. See [training_plan.md](training_plan.md) for output definitions, metrics, runtime measurement, limitations and next experiments.
+
+Explicit command (Python 3.11 or newer, no third-party packages required):
+
+```bash
+python train_q_learning.py --train-episodes 100000 --test-cases 1000 --seed 42
+```
+
+The former `--epochs` and `--train-cases` options are removed. Training inputs and episode metrics are streamed from/to disk so the 100,000-day dataset does not need to fit in RAM. The Q-table still grows in memory. This update changes the training protocol only; the discussed operating-rule and baseline revisions remain pending.

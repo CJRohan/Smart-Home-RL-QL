@@ -10,19 +10,25 @@ From the repository directory:
 python train_q_learning.py
 ```
 
-Defaults are 1,000 training cases and 1,000 separate evaluation cases, taken from `config.json`, one pass over training cases, and base seed 42. Each case is an independently generated June day with 29 time blocks, so the default performs 29,000 Q updates. Cases are saved before the first update. Every run gets a new folder under `./outputs` beside the script, even when launched from another directory.
+Defaults are 100,000 training episodes and 1,000 separate evaluation cases, taken from `config.json`, and base seed 42. Each training episode uses a newly generated independent June day exactly once. Each day has 29 time blocks, so the default performs 2,900,000 Q updates. The same agent and Q-table persist across episodes, while physical state resets for each day.
 
 ```bash
-python train_q_learning.py --train-cases 1000 --test-cases 1000 --epochs 1 --seed 42
+python train_q_learning.py --train-episodes 100000 --test-cases 1000 --seed 42
 ```
 
-`--epochs 10` reuses the same 1,000 training cases for ten shuffled passes (10,000 episodes, 290,000 updates). It does not generate 10,000 distinct days. The base seed determines separate training-data, evaluation-data, action-exploration, shuffle and random-baseline seeds, all saved in the manifest. Changing the base seed changes both data and training randomness, so comparisons intended to isolate training randomness should later use fixed data and independent agent seeds.
+Use Python 3.11 or newer; no third-party dependencies are required. The old `--train-cases` and `--epochs` arguments are removed. The previous 8,000-case, ten-pass run represented 80,000 episodes; its saved outputs remain unchanged.
+
+All scenarios are saved before the first update. Training scenarios are generated and read as streams, one day at a time, without loading the whole dataset. Episode metrics are also written incrementally. The fixed evaluation set is shared across policies. The Q-table and evaluation metrics still occupy memory. Training wall time includes reading/decompressing scenarios and writing episode metrics.
+
+The base seed determines separate training-data, evaluation-data, action-exploration and random-baseline seeds, all saved in the manifest. Scenarios are consumed in generation order without replay or shuffling. Independently drawn scenarios can still have identical binned states; that is expected. Changing the base seed changes both data and training randomness.
+
+This change implements the fresh-day training protocol only. The discussed appliance-operation rules, new baselines and expanded metrics have not yet been implemented. No full run was performed as part of this update.
 
 Each scenario has a reporting ID such as `train_0001`. Inside the RL state its day is always 1: these are independent single-day episodes. Using a unique case number as the state's day would prevent the agent from sharing knowledge across otherwise equivalent situations.
 
 ## What is saved
 
-Example folder name: `outputs/20260922T150000_123456Z_qlearning_June_train1000_test1000_epochs1_seed42/`.
+Example folder name: `outputs/20260922T150000_123456Z_qlearning_June_episodes100000_test1000_seed42/`.
 
 | Output | Contents and purpose |
 |---|---|
@@ -30,9 +36,9 @@ Example folder name: `outputs/20260922T150000_123456Z_qlearning_June_train1000_t
 | `config_snapshot.json` | Exact physical parameters, bins, rewards and learning settings used. CLI counts and seeds are recorded in the manifest. |
 | `source/` | Python source snapshot for this run, excluding local tests. |
 | `run_manifest.json` | Successful completion marker; UTC start/end, all seeds, actual case/episode/update counts, Python/platform, Q-table size, source and dataset SHA-256 hashes, stage runtimes and update throughput. |
-| `training_cases.json.gz` and `.csv` | All generated training inputs, 1,000 cases / 29,000 time rows by default. JSON preserves per-case structure; CSV is convenient for inspection. |
-| `evaluation_cases.json.gz` and `.csv` | Separate generated inputs never used for Q updates. Same evaluation cases used for every comparison policy. |
-| `training_episodes.csv` | One row per training episode: case ID, pass, epsilon, reward, physical outcomes, completion flags, mean absolute TD error, Q-table size and elapsed training seconds. |
+| `training_cases.jsonl.gz` and `.csv.gz` | All generated training inputs, 100,000 cases / 2,900,000 time rows by default. JSONL stores one full case per line; CSV is convenient for inspection. |
+| `evaluation_cases.jsonl.gz` and `.csv.gz` | Separate generated inputs never used for Q updates. Same evaluation cases used for every comparison policy. |
+| `training_episodes.csv` | One row per training episode: case ID, episode number, epsilon, reward, physical outcomes, completion flags, mean absolute TD error, Q-table size and elapsed training seconds. |
 | `q_table.json` | Learned state/action values, update visit counts, state-encoding/version metadata. Readable and reloadable, without unsafe pickle files. |
 | `evaluation_episodes.csv` | One row per evaluation day and policy: 4,000 rows for default settings. |
 | `evaluation_steps.jsonl.gz` | Every evaluation decision: 116,000 lines by default. Includes state, action, reward, battery before/after, solar/generator energy, per-appliance requested/served/unmet energy, switches and task progress. Gzip compression preserves every record while reducing file size for repository uploads. |
@@ -92,7 +98,7 @@ The report includes paired return differences: for each evaluation day subtract 
 2. **Resolve model information issues:** future-demand summaries currently read future realised appliance powers. Replace these with forecasts available at decision time, or explicitly retain the idealised-information assumption. Review omitted AC/scooter switch history and oven-cycle count in the state, future-demand bin saturation, and the overnight aggregation. The runner keeps current physical and reward rules intact.
 3. **Improve training under a fixed protocol:** add a separate validation set and periodic frozen-policy evaluation before tuning episode count, epsilon schedule, learning rate, bins or rewards. A moving average of exploratory training return is useful, but does not replace validation. Keep a fresh final test set untouched by those choices; once this pilot's evaluation outcomes guide revisions, treat them as development evidence.
 4. **Repeat with several training seeds:** for example five independent fits on fixed datasets, reporting variation across fits and days. One thousand evaluation days do not substitute for multiple trained policies.
-5. **Increase training only when evidence supports it:** compare more distinct training days versus more passes over the saved 1,000 days, inspect coverage and validation curves. Sparse tabular states may need simplification or more visits. A constant learning rate and finite episodes do not establish theoretical Q-learning convergence.
+5. **Increase training only when evidence supports it:** compare fresh-day episode budgets and inspect coverage and validation curves. The current runner uses every generated training case once. Sparse tabular states may need simplification or more visits. A constant learning rate and finite episodes do not establish theoretical Q-learning convergence.
 6. **Strengthen comparisons and realism:** compare to a better deadline-aware heuristic and, later, an optimisation benchmark with matched information/constraints. Then test different months and lower-solar conditions; calibrate the solar/noise assumptions. Multi-day recurrence comes after single-day correctness and useful performance are established.
 
 Evaluation guidance: [Stable-Baselines3 evaluation recommendations](https://stable-baselines3.readthedocs.io/en/master/guide/rl_tips.html) and [Agarwal et al., reliable RL evaluation](https://arxiv.org/abs/2108.13264). They motivate separate evaluation and uncertainty reporting; the physical metrics above are specific to this home scheduling problem.

@@ -41,15 +41,34 @@ def write_csv(path, rows):
 def generate_cases(config, count, seed, split):
     generator = ScenarioGenerator(config, seed)
     # Case identity is metadata, NOT the day within the episode in the RL state.
-    return [dict(case_id=f"{split}_{i + 1:04d}", rows=generator.generate_day(day_number=1))
-            for i in range(count)]
+    for i in range(count):
+        yield dict(case_id=f"{split}_{i + 1:06d}", rows=generator.generate_day(day_number=1))
 
 
 def save_cases(folder, split, cases):
-    with gzip.open(folder / f"{split}_cases.json.gz", "wt", encoding="utf-8", compresslevel=6) as stream:
-        json.dump(cases, stream, allow_nan=False)
-    write_csv(folder / f"{split}_cases.csv", [
-        dict(case_id=case["case_id"], **row) for case in cases for row in case["rows"]])
+    """Stream scenarios to disk; never retain the full training set in memory."""
+    with gzip.open(folder / f"{split}_cases.jsonl.gz", "wt", encoding="utf-8") as data, \
+            gzip.open(folder / f"{split}_cases.csv.gz", "wt", newline="", encoding="utf-8") as table:
+        writer = None
+        for case in cases:
+            data.write(json.dumps(case, allow_nan=False) + "\n")
+            for row in case["rows"]:
+                record = dict(case_id=case["case_id"], **row)
+                if writer is None:
+                    writer = csv.DictWriter(table, fieldnames=list(record))
+                    writer.writeheader()
+                writer.writerow(record)
+
+
+def read_cases(path):
+    with gzip.open(path, "rt", encoding="utf-8") as stream:
+        for line in stream:
+            yield json.loads(line)
+
+
+def file_sha256(path):
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
 def greedy_action(agent, state, actions):
@@ -183,22 +202,22 @@ def summarize(rows):
     return summaries
 
 
-def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_root=None, command_args=None):
+def train(train_episodes=None, *, test_cases=None, seed=None, output_root=None, command_args=None):
     """Save a complete pilot run and return (agent, output_directory)."""
     started = time.perf_counter()
     utc_start = datetime.now(timezone.utc)
     config = ConfigLoader().load()
-    number_of_days = config["experiment"]["training_instances"] if number_of_days is None else number_of_days
+    train_episodes = config["experiment"]["training_episodes"] if train_episodes is None else train_episodes
     test_cases = config["experiment"]["test_instances"] if test_cases is None else test_cases
     seed = config["experiment"]["seed"] if seed is None else seed
-    if min(number_of_days, test_cases, epochs) < 1:
-        raise ValueError("Training cases, test cases and epochs must all be positive")
+    if min(train_episodes, test_cases) < 1:
+        raise ValueError("Training episodes and test cases must be positive")
     folder = (Path(output_root) if output_root is not None else ROOT / "outputs") / (
         f"{utc_start.strftime('%Y%m%dT%H%M%S_%fZ')}_qlearning_{config['experiment']['month']}"
-        f"_train{number_of_days}_test{test_cases}_epochs{epochs}_seed{seed}")
+        f"_episodes{train_episodes}_test{test_cases}_seed{seed}")
     folder.mkdir(parents=True, exist_ok=False)
-    effective_args = ["--train-cases", str(number_of_days), "--test-cases", str(test_cases),
-                      "--epochs", str(epochs), "--seed", str(seed)]
+    effective_args = ["--train-episodes", str(train_episodes), "--test-cases", str(test_cases),
+                      "--seed", str(seed)]
     if output_root is not None:
         effective_args.extend(["--output-root", str(output_root)])
     supplied_args = list(command_args) if command_args is not None else effective_args
@@ -212,7 +231,7 @@ def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_r
     (folder / "run_command.txt").write_text(invocation["command"] + "\n", encoding="utf-8")
     timings = {}
     seeds = dict(training_data=seed, evaluation_data=seed + 1, agent=seed + 2,
-                 shuffle=seed + 3, random_baseline=seed + 4)
+                 random_baseline=seed + 4)
     write_json(folder / "config_snapshot.json", config)
     source_dir = folder / "source"
     source_dir.mkdir()
@@ -224,34 +243,31 @@ def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_r
         (source_dir / source.name).write_bytes(data)
         source_hashes[source.name] = hashlib.sha256(data).hexdigest()
     stage = time.perf_counter()
-    training = generate_cases(config, number_of_days, seeds["training_data"], "train")
-    evaluation = generate_cases(config, test_cases, seeds["evaluation_data"], "evaluation")
+    training = generate_cases(config, train_episodes, seeds["training_data"], "train")
+    evaluation = list(generate_cases(config, test_cases, seeds["evaluation_data"], "evaluation"))
     save_cases(folder, "training", training)
     save_cases(folder, "evaluation", evaluation)
     timings["generation_and_dataset_write_seconds"] = time.perf_counter() - stage
     # Both datasets have been saved before any Q update.
     agent = QLearningAgent(config, seed=seeds["agent"])
     visits = Counter()
-    shuffler = random.Random(seeds["shuffle"])
-    training_metrics = []
     start_epsilon = config["q_learning_parameters"]["epsilon_start"]
     end_epsilon = config["q_learning_parameters"]["epsilon_end"]
-    total_episodes = number_of_days * epochs
     stage = time.perf_counter()
-    for epoch in range(1, epochs + 1):
-        order = list(training)
-        shuffler.shuffle(order)
-        for case in order:
-            index = len(training_metrics)
-            epsilon = start_epsilon + (end_epsilon - start_epsilon) * index / max(1, total_episodes - 1)
-            metrics = run_episode(config, case, agent, "training", shuffler, epsilon, visits)
-            metrics.update(episode=index + 1, epoch=epoch, epsilon=epsilon,
+    with (folder / "training_episodes.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = None
+        for index, case in enumerate(read_cases(folder / "training_cases.jsonl.gz")):
+            epsilon = start_epsilon + (end_epsilon - start_epsilon) * index / max(1, train_episodes - 1)
+            metrics = run_episode(config, case, agent, "training", None, epsilon, visits)
+            metrics.update(episode=index + 1, epsilon=epsilon,
                            q_table_entries=len(agent.q_table), elapsed_training_seconds=time.perf_counter() - stage)
-            training_metrics.append(metrics)
-            if (index + 1) % max(100, total_episodes // 100) == 0 or index + 1 == total_episodes:
-                print(f"Training {index + 1}/{total_episodes}: epsilon={epsilon:.3f}, Q entries={len(agent.q_table)}", flush=True)
+            if writer is None:
+                writer = csv.DictWriter(stream, fieldnames=list(metrics))
+                writer.writeheader()
+            writer.writerow(metrics)
+            if (index + 1) % max(100, train_episodes // 100) == 0 or index + 1 == train_episodes:
+                print(f"Training {index + 1}/{train_episodes}: epsilon={epsilon:.3f}, Q entries={len(agent.q_table)}", flush=True)
     timings["training_seconds"] = time.perf_counter() - stage
-    write_csv(folder / "training_episodes.csv", training_metrics)
     write_json(folder / "q_table.json", dict(format_version=1, state_encoding="existing_single_day_state_v1",
         config_file="config_snapshot.json", entries=[dict(state=list(state), action=action, value=value,
                                                           visits=visits[(state, action)])
@@ -280,7 +296,7 @@ def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_r
         paired_return_difference_qlearning_minus_baseline=comparisons,
         uncertainty_note="Intervals across held-out days for ONE fitted policy, not across training seeds. Continuous metrics use normal-approximation mean intervals (unreliable for small samples); binary completion/success rates use Wilson intervals."))
     summary = ["# Single-day Q-learning pilot", "", "Command: `" + invocation["command"] + "`", "",
-               f"Training: {number_of_days} unique cases x {epochs} passes = {total_episodes} episodes.",
+               f"Training: {train_episodes} independently generated days, each used once = {train_episodes} episodes.",
                f"Evaluation: {test_cases} independent cases, identical for every policy.", "",
                "| Policy | Mean return | Daily success | Generator h/day | Unmet kWh/day |",
                "|---|---:|---:|---:|---:|"]
@@ -298,14 +314,15 @@ def train(number_of_days=None, *, test_cases=None, epochs=1, seed=None, output_r
                     f"Training runtime: {timings['training_seconds']:.3f} seconds.",
                     f"Evaluation plus trace writing: {timings['evaluation_including_trace_write_seconds']:.3f} seconds."])
     (folder / "summary.md").write_text("\n".join(summary) + "\n", encoding="utf-8")
-    dataset_hashes = {name: hashlib.sha256((folder / name).read_bytes()).hexdigest()
-                      for name in ("training_cases.json.gz", "evaluation_cases.json.gz")}
-    timings["training_updates_per_second"] = sum(len(case["rows"]) for case in training) * epochs / timings["training_seconds"]
+    dataset_hashes = {name: file_sha256(folder / name)
+                      for name in ("training_cases.jsonl.gz", "evaluation_cases.jsonl.gz")}
+    timings["training_updates_per_second"] = sum(visits.values()) / timings["training_seconds"]
     timings["total_seconds_before_manifest_write"] = time.perf_counter() - started
     write_json(folder / "run_manifest.json", dict(status="completed", invocation=invocation, started_utc=utc_start.isoformat(),
         completed_utc=datetime.now(timezone.utc).isoformat(), python=platform.python_version(),
-        platform=platform.platform(), training_cases=number_of_days, evaluation_cases=test_cases, epochs=epochs,
-        training_episodes=total_episodes, training_updates=sum(visits.values()), seeds=seeds,
+        platform=platform.platform(), training_cases=train_episodes, evaluation_cases=test_cases,
+        scenario_sampling="fresh_independent_day_per_episode", scenario_uses=1, dataset_format="jsonl.gz",
+        training_episodes=train_episodes, training_updates=sum(visits.values()), seeds=seeds,
         q_table_entries=len(agent.q_table), unique_states=len({state for state, _ in agent.q_table}),
         single_visit_state_action_fraction=sum(count == 1 for count in visits.values()) / len(visits),
         timings=timings, evaluation_seconds_by_policy=policy_timings, source_sha256=source_hashes,
@@ -325,11 +342,10 @@ def positive_int(value):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--train-cases", type=positive_int, default=None)
+    parser.add_argument("--train-episodes", type=positive_int, default=None, help="Fresh single-day episodes (default: config, 100000)")
     parser.add_argument("--test-cases", type=positive_int, default=None)
-    parser.add_argument("--epochs", type=positive_int, default=1, help="Passes over the same saved training cases")
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--output-root", type=Path, default=None, help="Default: outputs beside this script")
     args = parser.parse_args()
-    train(args.train_cases, test_cases=args.test_cases, epochs=args.epochs,
+    train(args.train_episodes, test_cases=args.test_cases,
           seed=args.seed, output_root=args.output_root, command_args=sys.argv[1:])
