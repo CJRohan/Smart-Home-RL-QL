@@ -36,16 +36,25 @@ class EnergySystem:
         available_kwh = min(battery_size, energy_before_loads)
 
         # Second, appliances take energy from the home battery.
-        served_kwh = min(demand_kwh, available_kwh)
-        unmet_kwh = max(0.0, demand_kwh - served_kwh)
-        battery_after_kwh = available_kwh - served_kwh
+        # If total demand fits in available energy, all appliances are served.
+        # If battery is depleted (demand > available), all appliances stop.
+        if demand_kwh <= available_kwh:
+            served_kwh = demand_kwh
+            unmet_kwh = 0.0
+            battery_after_kwh = available_kwh - demand_kwh
+            power_unavailable = False
+        else:
+            served_kwh = 0.0
+            unmet_kwh = demand_kwh
+            battery_after_kwh = 0.0
+            power_unavailable = True
 
         return {
             "battery_after_kwh": battery_after_kwh,
             "served_kwh": served_kwh,
             "unmet_kwh": unmet_kwh,
             "curtailed_kwh": curtailed_kwh,
-            "power_unavailable": unmet_kwh > 0,
+            "power_unavailable": power_unavailable,
         }
 
     def update_scooter_battery(self, scooter_before_kwh, supplied_charging_kwh):
@@ -57,25 +66,11 @@ class EnergySystem:
         return scooter_before_kwh + accepted_kwh
 
     def allocate_loads(self, available_kwh, requested):
-        """Serve configured priority order; fixed tasks require a full time slice.
+        """No fixed priority. Total demand is served if battery energy is sufficient.
 
-        Once a requested load cannot be fully supplied, lower priorities receive
-        nothing. Unused energy stays in the battery for a later period.
+        If battery is depleted (demand > available), all appliances stop.
         """
-        order = self.config["load_shedding"]["priority_order"]
-        if len(order) != len(set(order)) or set(order) != set(requested):
-            raise ValueError("Priority order must contain every appliance exactly once")
-        served = dict.fromkeys(requested, 0.0)
-        blocked = False
-        for name in order:
-            need = requested[name]
-            if need <= 0 or blocked:
-                continue
-            if name in ("laundry", "dishwasher", "oven"):
-                supplied = need if need <= available_kwh else 0.0
-            else:
-                supplied = min(need, available_kwh)
-            served[name] = supplied
-            available_kwh -= supplied
-            blocked = supplied < need
-        return served
+        total_demand = sum(requested.values())
+        if total_demand <= available_kwh:
+            return {name: val for name, val in requested.items()}
+        return {name: 0.0 for name in requested}

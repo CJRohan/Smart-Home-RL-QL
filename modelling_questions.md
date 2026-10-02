@@ -13,16 +13,10 @@ These are genuine modelling choices. They should be agreed before a learning env
 9. Are the proposed bins in `config.json` suitable for the two solar forecast variables?
 10. If a running fixed-duration appliance is turned off, should it pause and retain its remaining time, cancel the task, or should turning it off be prohibited?
 
-Resolved: single-day planning; fridge before fixed tasks before TV/AC; generator stops on fullness and overnight; overnight includes morning solar; tasks pause/resume; supplied London solar with June first; separate solar bins.
-
-
-Assumptions for further review:
-
-1. Fixed-task ties use laundry, dishwasher, oven; comfort ties use TV before AC. Can deadlines be used to further decide ties?
-2. Scooter is placed last in the priority.
-3. Zero solar shares the first bin.
-4. New oven cycles remain agent choices at 11:30 or 17:00; paused cycles can resume later during daytime.
-5. The overnight aggregate cannot detect shortages before morning solar arrives. Finer time resolution is future work.
-6. Supplied powers, durations and noise ranges are retained. Calibration against measured data is future work.
-
-The existing compact state omits explicit AC/scooter switches and oven cycle count.
+Resolved:
+- Single-day planning on London June solar table first.
+- Generator charges battery; battery supplies appliances. Generator stops on fullness and is prohibited overnight.
+- Removed fixed supply priority: if total demand exceeds available battery energy, all appliances stop and RL agent receives high depletion penalty (-100).
+- Fixed-duration tasks are non-preemptible by choice (no voluntary pausing); remaining time is retained during outages and resumes when power is restored.
+- Composite action space: agent can start/finish/continue appliances and generator simultaneously at each 30-minute block.
+- 11 state variables and reward weights preserved.

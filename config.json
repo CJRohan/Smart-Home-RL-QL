@@ -97,10 +97,10 @@
       "refrigerator",
       "tv_pc"
     ],
-    "meaning_of_turning_off_a_running_fixed_duration_appliance": "Pause the task and preserve its remaining time.",
-    "initial_action_control_rule": "One valid switch action or do_nothing is selected per 30-minute decision period. Device switches persist until changed."
+    "meaning_of_turning_off_a_running_fixed_duration_appliance": "Tasks are non-preemptible by choice; running tasks continue until complete and retain progress during battery depletion outages.",
+    "action_control_rule": "Composite action vector (generator, ac_heater, scooter, start_laundry, start_dishwasher, start_oven) selected simultaneously per decision period."
   },
   "load_shedding": {
-    "priority_order": ["refrigerator", "laundry", "dishwasher", "oven", "tv_pc", "ac_heater", "scooter"]
+    "supply_rule": "No fixed priority. Total demand is served if battery energy is sufficient; if battery is depleted, all appliances stop and a high penalty is received."
   }
 }

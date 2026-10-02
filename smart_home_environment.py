@@ -2,7 +2,7 @@
 
 from appliance_model import ApplianceModel
 from energy_system import EnergySystem
-from state_action_model import StateActionModel
+from state_action_model import StateActionModel, CompositeAction
 
 
 class SmartHomeEnvironment:
@@ -51,24 +51,26 @@ class SmartHomeEnvironment:
     def valid_actions(self):
         row = self.scenario[self.period]
         return self.state_actions.valid_actions(
-            row["time"], row["is_overnight"], self.device_status
+            clock_time=row["time"],
+            is_overnight=row["is_overnight"],
+            device_status=self.device_status,
+            battery_kwh=self.home_battery_kwh,
+            scooter_battery_kwh=self.scooter_battery_kwh,
+            oven_cycles_completed=self.oven_cycles_completed,
         )
 
     def step(self, action):
-        """Apply one valid action, run one energy period, then return RL values."""
+        """Apply one valid composite action, run one energy period, then return RL values."""
         if self.finished:
             raise RuntimeError("This day is finished. Call reset before step.")
+        if not isinstance(action, CompositeAction):
+            action = CompositeAction(*action)
         if action not in self.valid_actions():
             raise ValueError(f"{action} is not valid in this period")
 
         state_before = self.state()
         row = self.scenario[self.period]
-        self._apply_action(action)
-        if row["is_overnight"]:
-            self.device_status["generator"] = "off"
-            self.device_status["ac_heater"] = "off"
-            for name in ("laundry", "dishwasher", "oven"):
-                self.device_status[name] = self.device_status[name].replace("running_", "paused_")
+        self._apply_action(action, row["is_overnight"])
         active = self._active_devices(row)
         requested = self._demand_by_appliance(row, active)
         demand_kwh = sum(requested.values())
@@ -84,26 +86,27 @@ class SmartHomeEnvironment:
         available = min(capacity, self.home_battery_kwh + solar_kwh + generator_kwh)
         served = self.energy_system.allocate_loads(available, requested)
         result = self.energy_system.update_home_battery(
-            self.home_battery_kwh, solar_kwh, generator_kwh, sum(served.values())
+            self.home_battery_kwh, solar_kwh, generator_kwh, demand_kwh
         )
         unmet = {name: max(0.0, requested[name] - served[name]) for name in requested}
         result["unmet_kwh"] = sum(unmet.values())
         result["power_unavailable"] = result["unmet_kwh"] > 0
         self.home_battery_kwh = result["battery_after_kwh"]
 
-        # Progress belongs to the device actually supplied, not to all loads together.
-        for name in ("laundry", "dishwasher", "oven"):
-            if active[name] and unmet[name] > 0:
-                self.device_status[name] = self.device_status[name].replace("running_", "paused_")
-        self._advance_running_tasks()
-        self.scooter_battery_kwh = self.energy_system.update_scooter_battery(
-            self.scooter_battery_kwh, served["scooter"]
-        )
-        if self.scooter_battery_kwh >= self.config["appliances"]["scooter"]["battery_capacity_kwh"]:
-            self.device_status["scooter"] = "off"
-        # Stop at charge-time fullness, before appliances draw from the battery.
+        # If power is served, running tasks advance and scooter charges.
+        # If battery is depleted, tasks do not advance, but retain progress for later periods.
+        if not result["power_unavailable"]:
+            self._advance_running_tasks()
+            self.scooter_battery_kwh = self.energy_system.update_scooter_battery(
+                self.scooter_battery_kwh, served["scooter"]
+            )
+            if self.scooter_battery_kwh >= self.config["appliances"]["scooter"]["battery_capacity_kwh"]:
+                self.device_status["scooter"] = "off"
+
+        # Stop generator switch at charge-time fullness
         if available >= capacity:
             self.device_status["generator"] = "off"
+
         fully_served = {name: active[name] and unmet[name] == 0 for name in active}
         reward = self._reward(row, fully_served, generator_kwh, result["power_unavailable"])
         self.total_reward += reward
@@ -123,22 +126,26 @@ class SmartHomeEnvironment:
             **result,
         }
 
-    def _apply_action(self, action):
-        if action == "do_nothing":
+    def _apply_action(self, action, is_overnight):
+        if is_overnight:
+            self.device_status["generator"] = "off"
+            self.device_status["ac_heater"] = "off"
+            self.device_status["scooter"] = "on" if action.scooter else "off"
             return
-        appliance, command = action.rsplit("_", 1)
-        if appliance in ("laundry", "dishwasher", "oven"):
-            status = self.device_status[appliance]
-            if command == "off" and status.startswith("running_"):
-                self.device_status[appliance] = status.replace("running_", "paused_")
-            elif command == "on":
-                if status == "not_started":
-                    duration = self.config["appliances"][appliance]["duration_periods"]
-                    self.device_status[appliance] = f"running_{duration}"
-                elif status.startswith("paused_"):
-                    self.device_status[appliance] = status.replace("paused_", "running_")
-            return
-        self.device_status[appliance] = "on" if command == "on" else "off"
+
+        self.device_status["generator"] = "on" if action.generator else "off"
+        self.device_status["ac_heater"] = "on" if action.ac_heater else "off"
+        self.device_status["scooter"] = "on" if action.scooter else "off"
+
+        if action.start_laundry:
+            duration = self.config["appliances"]["laundry"]["duration_periods"]
+            self.device_status["laundry"] = f"running_{duration}"
+        if action.start_dishwasher:
+            duration = self.config["appliances"]["dishwasher"]["duration_periods"]
+            self.device_status["dishwasher"] = f"running_{duration}"
+        if action.start_oven:
+            duration = self.config["appliances"]["oven"]["duration_periods"]
+            self.device_status["oven"] = f"running_{duration}"
 
     def _active_devices(self, row):
         return {

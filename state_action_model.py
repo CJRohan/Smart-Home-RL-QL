@@ -1,7 +1,15 @@
-"""Build the Q-learning state and list valid actions for one period.
+import itertools
+from typing import NamedTuple
 
-This module defines the design only. It does not generate scenarios or train Q-learning.
-"""
+
+class CompositeAction(NamedTuple):
+    """Joint dispatch decision for one 30-minute period."""
+    generator: int
+    ac_heater: int
+    scooter: int
+    start_laundry: int
+    start_dishwasher: int
+    start_oven: int
 
 
 class StateActionModel:
@@ -34,9 +42,8 @@ class StateActionModel:
         """Create the discrete state used later as a Q-table key.
 
         task_status is a small dictionary. Each fixed task stores one of:
-        'not_started', 'running_1', 'running_2', 'running_3',
-        'paused_1', 'paused_2', 'paused_3', or 'completed'.
-        A paused task keeps its remaining duration and can later be resumed.
+        'not_started', 'running_1', 'running_2', 'running_3', or 'completed'.
+        Tasks are non-preemptible by choice; remaining time is preserved during outages.
         """
         state_definition = self.config["state_definition"]
 
@@ -77,53 +84,64 @@ class StateActionModel:
             future_demand_bin,
         )
 
-    def valid_actions(self, clock_time, is_overnight, device_status):
-        """Return only actions that make sense in this exact period.
+    def valid_actions(
+        self,
+        clock_time,
+        is_overnight,
+        device_status,
+        battery_kwh=0.0,
+        scooter_battery_kwh=0.0,
+        oven_cycles_completed=0,
+    ):
+        """Return all physically permitted composite action vectors for this period.
 
-        device_status stores 'on'/'off' for generator, AC/heater, and scooter.
-        Fixed tasks store 'not_started', 'running_1', 'paused_1', etc., or 'completed'.
-        An already-on device receives only an off action. A completed task receives no action.
-        Refrigerator and TV/PC are automatic, so they are not part of the action list.
+        Decisions are made simultaneously. Fixed-duration tasks are triggered once
+        and run to completion without voluntary pausing.
+
+        Every sub-actuator option list begins with 0, ensuring that the first item
+        in the Cartesian product is always CompositeAction(0, 0, 0, 0, 0, 0).
         """
-        # The agent must also be able to make no switch change in this period.
-        actions = ["do_nothing"]
+        battery_capacity = self.config["battery"]["capacity_kwh"]
+        if is_overnight or battery_kwh >= battery_capacity:
+            gen_options = [0]
+        else:
+            gen_options = [0, 1]
 
-        self._add_generator_actions(actions, is_overnight, device_status["generator"])
-        self._add_fixed_task_actions(actions, "laundry", not is_overnight, device_status["laundry"])
-        self._add_fixed_task_actions(
-            actions,
-            "dishwasher",
-            clock_time >= self.config["appliances"]["dishwasher"]["earliest_start"] and not is_overnight,
-            device_status["dishwasher"],
+        ac_options = [0] if is_overnight else [0, 1]
+
+        scooter_capacity = self.config["appliances"]["scooter"]["battery_capacity_kwh"]
+        can_scooter = (
+            (is_overnight or clock_time >= self.config["appliances"]["scooter"]["earliest_start"])
+            and scooter_battery_kwh < scooter_capacity
         )
-        self._add_fixed_task_actions(
-            actions,
-            "oven",
-            (clock_time in self.config["appliances"]["oven"]["allowed_start_times"]
-             or device_status["oven"].startswith("paused_")) and not is_overnight,
-            device_status["oven"],
+        scooter_options = [0, 1] if can_scooter else [0]
+
+        laundry_options = [0, 1] if (not is_overnight and device_status["laundry"] == "not_started") else [0]
+
+        can_start_dw = (
+            not is_overnight
+            and clock_time >= self.config["appliances"]["dishwasher"]["earliest_start"]
+            and device_status["dishwasher"] == "not_started"
         )
-        self._add_switch_actions(actions, "ac_heater", not is_overnight, device_status["ac_heater"])
+        dw_options = [0, 1] if can_start_dw else [0]
 
-        scooter_can_start = is_overnight or clock_time >= self.config["appliances"]["scooter"]["earliest_start"]
-        self._add_switch_actions(actions, "scooter", scooter_can_start, device_status["scooter"])
+        can_start_oven = (
+            not is_overnight
+            and clock_time in self.config["appliances"]["oven"]["allowed_start_times"]
+            and device_status["oven"] == "not_started"
+            and oven_cycles_completed < self.config["appliances"]["oven"]["required_cycles"]
+        )
+        oven_options = [0, 1] if can_start_oven else [0]
 
+        actions = [
+            CompositeAction(g, ac, sc, l, dw, ov)
+            for g, ac, sc, l, dw, ov in itertools.product(
+                gen_options,
+                ac_options,
+                scooter_options,
+                laundry_options,
+                dw_options,
+                oven_options,
+            )
+        ]
         return actions
-
-    def _add_generator_actions(self, actions, is_overnight, status):
-        if status == "on":
-            actions.append("generator_off")
-        elif status == "off" and not is_overnight:
-            actions.append("generator_on")
-
-    def _add_fixed_task_actions(self, actions, appliance, can_start, status):
-        if status == "on" or status.startswith("running_"):
-            actions.append(f"{appliance}_off")
-        elif (status == "not_started" or status.startswith("paused_")) and can_start:
-            actions.append(f"{appliance}_on")
-
-    def _add_switch_actions(self, actions, appliance, can_start, status):
-        if status == "on":
-            actions.append(f"{appliance}_off")
-        elif status == "off" and can_start:
-            actions.append(f"{appliance}_on")

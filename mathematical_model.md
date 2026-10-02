@@ -64,13 +64,16 @@ Extra energy cannot be stored:
 
 Then appliances use the battery:
 
-`B_{t+1} = B_after_charge − Σ served_{a,t}`
+If the total desired appliance demand is within available battery energy (`D_t <= B_after_charge`):
+- All requested appliances are served: `served_{a,t} = E_{a,t}`
+- Next battery energy: `B_{t+1} = B_after_charge - D_t`
+- Unmet demand: `U_t = 0`
 
-If the desired appliance energy is greater than the battery energy, the difference is unmet demand:
-
-`U_t = D_t − Σ served_{a,t}`
-
-`U_t > 0` represents a battery-depletion / power-unavailability event. The detailed rule for which appliance loses supply first remains a modelling choice.
+If the desired appliance energy exceeds available battery energy (`D_t > B_after_charge`):
+- The battery is depleted: all appliances stop (`served_{a,t} = 0` for all appliances)
+- `B_{t+1} = 0`
+- `U_t = D_t`
+- A severe battery depletion penalty is applied to the RL agent. There is no fixed supply priority or artificial load-shedding rule.
 
 ## 6. Scooter battery
 
@@ -82,33 +85,31 @@ When `z_t = z_max`, scooter charging stops automatically. For the example scoote
 
 ## 7. Scheduling constraints
 
-The environment enforces these rules:
+The environment enforces these physical rules:
 
-- fixed-duration tasks retain remaining duration when paused; only fully supplied periods reduce it;
-- a completed fixed-duration task stops automatically;
-- dishwasher cannot start before its allowed time;
-- new oven cycles can start at the configured times; paused cycles can resume later during daytime;
+- fixed-duration tasks are non-preemptible by choice: once started, they run to completion;
+- if interrupted by a battery-depletion outage, remaining duration is preserved and the task continues in subsequent periods when power is available;
+- completed fixed-duration tasks stop automatically;
+- dishwasher cannot start before its allowed time (20:00);
+- oven cycles can start at the configured meal times (11:30 and 17:00);
 - TV/PC runs only in its permitted windows;
-- normal appliances and generator do not run after 23:00;
+- normal appliances, AC, and generator do not run after 23:00;
 - refrigerator continues overnight;
 - scooter may charge overnight;
 - generator stops when the home battery becomes full.
 
-## 8. Objective (not numerical yet)
+## 8. Objective
 
-The model should maximise a score that rewards desired behaviour and penalises undesired behaviour:
+The model maximises a cumulative return that rewards desired behaviour and penalises undesired behaviour:
 
-`maximise: household comfort + completed tasks − generator-use cost − missed-deadline cost − unmet-demand cost − wasted-energy cost`
+`maximise: household comfort + completed tasks - generator-use cost - missed-deadline cost - battery-depletion penalty`
 
-The reward includes generator duration, missed deadlines, uncharged scooter, AC/heater comfort, and a strong penalty for battery depletion. The numerical values are stored in `config.json`.
+The numerical reward values are configured in `config.json`.
 
-## 9. What an RL agent would eventually choose
+## 9. Composite action dispatch
 
-At each time block, the agent would choose permitted decisions such as:
+At each 30-minute time block, the agent chooses a composite joint action vector simultaneously:
 
-- start laundry, dishwasher, or oven when allowed;
-- run / stop AC-heater;
-- start / stop scooter charging after 17:00;
-- turn generator on / off.
+`a_t = (u_gen, u_ac, u_scooter, u_start_laundry, u_start_dishwasher, u_start_oven)`
 
-The mathematical model above decides the physical result of that decision: energy flow, battery level, task progress, and whether there is a power shortfall.
+This allows starting the generator and appliances simultaneously to prevent battery depletion, providing true multi-variable microgrid control.

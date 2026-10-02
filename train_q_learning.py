@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Save daily scenarios, train tabular Q-learning, evaluate frozen policies.
 
 Run `python train_q_learning.py`; uses only the Python standard library.
@@ -22,6 +23,7 @@ from config_loader import ConfigLoader
 from q_learning_agent import QLearningAgent
 from scenario_generator import ScenarioGenerator
 from smart_home_environment import SmartHomeEnvironment
+from state_action_model import CompositeAction
 
 ROOT = Path(__file__).resolve().parent
 TOL = 1e-9
@@ -81,26 +83,46 @@ def load_agent(run_folder):
     run_folder = Path(run_folder)
     config = json.loads((run_folder / "config_snapshot.json").read_text(encoding="utf-8"))
     saved = json.loads((run_folder / "q_table.json").read_text(encoding="utf-8"))
-    if saved["format_version"] != 1 or saved["state_encoding"] != "existing_single_day_state_v1":
-        raise ValueError("Unsupported Q-table format or state encoding")
+    if saved["format_version"] != 1:
+        raise ValueError("Unsupported Q-table format")
     agent = QLearningAgent(config)
-    agent.q_table = {(tuple(entry["state"]), entry["action"]): entry["value"]
-                     for entry in saved["entries"]}
+    agent.q_table = {
+        (
+            tuple(entry["state"]),
+            CompositeAction(*entry["action"]) if isinstance(entry["action"], (list, tuple)) else entry["action"]
+        ): entry["value"]
+        for entry in saved["entries"]
+    }
     return config, agent
 
 
 def rule_action(env, actions):
-    """Simple battery-threshold comparison, obeying the same one-switch rule."""
-    if "generator_on" in actions and env.home_battery_kwh < 4.0:
-        return "generator_on"
-    for action in ("oven_on", "dishwasher_on", "laundry_on", "scooter_on"):
-        if action in actions:
-            return action
-    if "ac_heater_off" in actions and env.home_battery_kwh < 4.0:
-        return "ac_heater_off"
-    if "ac_heater_on" in actions and env.home_battery_kwh > 6.0:
-        return "ac_heater_on"
-    return "do_nothing"
+    """Heuristic rule-based dispatcher selecting a valid CompositeAction."""
+    row = env.scenario[env.period]
+    time = row["time"]
+    is_overnight = row["is_overnight"]
+    want_gen = int(env.home_battery_kwh < 4.0 and not is_overnight)
+    want_ac = int(env.home_battery_kwh > 6.0 and not is_overnight)
+    want_scooter = int(
+        (is_overnight or time >= env.config["appliances"]["scooter"]["earliest_start"])
+        and env.scooter_battery_kwh < env.config["appliances"]["scooter"]["battery_capacity_kwh"]
+    )
+    want_laundry = int(env.device_status["laundry"] == "not_started" and not is_overnight)
+    want_dw = int(
+        env.device_status["dishwasher"] == "not_started"
+        and time >= env.config["appliances"]["dishwasher"]["earliest_start"]
+        and not is_overnight
+    )
+    want_oven = int(
+        env.device_status["oven"] == "not_started"
+        and time in env.config["appliances"]["oven"]["allowed_start_times"]
+        and not is_overnight
+        and env.oven_cycles_completed < env.config["appliances"]["oven"]["required_cycles"]
+    )
+    desired = CompositeAction(want_gen, want_ac, want_scooter, want_laundry, want_dw, want_oven)
+    if desired in actions:
+        return desired
+    return actions[0]
 
 
 def run_episode(config, case, agent, policy, rng, epsilon=0.0, visits=None, trace=None):
@@ -127,7 +149,7 @@ def run_episode(config, case, agent, policy, rng, epsilon=0.0, visits=None, trac
         elif policy == "rule_based":
             action = rule_action(env, actions)
         elif policy == "do_nothing":
-            action = "do_nothing"
+            action = actions[0]
         else:
             raise ValueError(f"Unknown policy: {policy}")
         unlearned = (state, action) not in agent.q_table
@@ -135,7 +157,7 @@ def run_episode(config, case, agent, policy, rng, epsilon=0.0, visits=None, trac
         before = env.home_battery_kwh
         next_state, reward, done, info = env.step(action)
         if policy == "training":
-            next_actions = ["do_nothing"] if done else env.valid_actions()
+            next_actions = [actions[0]] if done else env.valid_actions()
             td_errors.append(abs(agent.learn(state, action, reward, next_state, next_actions, done)))
             visits[(state, action)] += 1
         metrics["return_total"] += reward
@@ -268,8 +290,8 @@ def train(train_episodes=None, *, test_cases=None, seed=None, output_root=None, 
             if (index + 1) % max(100, train_episodes // 100) == 0 or index + 1 == train_episodes:
                 print(f"Training {index + 1}/{train_episodes}: epsilon={epsilon:.3f}, Q entries={len(agent.q_table)}", flush=True)
     timings["training_seconds"] = time.perf_counter() - stage
-    write_json(folder / "q_table.json", dict(format_version=1, state_encoding="existing_single_day_state_v1",
-        config_file="config_snapshot.json", entries=[dict(state=list(state), action=action, value=value,
+    write_json(folder / "q_table.json", dict(format_version=1, state_encoding="composite_single_day_state_v2",
+        config_file="config_snapshot.json", entries=[dict(state=list(state), action=list(action) if isinstance(action, tuple) else action, value=value,
                                                           visits=visits[(state, action)])
         for (state, action), value in sorted(agent.q_table.items())]))
     frozen = dict(agent.q_table)

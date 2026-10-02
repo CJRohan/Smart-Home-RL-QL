@@ -18,8 +18,6 @@ See `training_plan.md` for the reproducible training pilot, saved outputs and ev
 
 ## Environment rules and assumptions
 
-Refrigerator and TV are automatic loads. Other devices remain controlled through one valid switch action or do_nothing per decision block. State includes time/day, battery bin, generator status, task progress and four forecast/demand summaries. Scooter charge is represented through demand rather than a separate state bin.
+Refrigerator and TV are automatic loads. Controllable devices (generator, AC, scooter, and fixed task triggers) are controlled simultaneously through a composite action vector per 30-minute decision block. State includes time/day, battery bin, generator status, task progress and four forecast/demand summaries (11 variables total).
 
-Supply priority is refrigerator, laundry, dishwasher, oven, TV, AC, scooter. Within-group ordering and scooter placement are assumptions. Fixed tasks need a complete time slice or pause without consuming energy; lower priorities wait when a higher requested load is undersupplied. A paused task retains its duration and resumes through an on action. Overnight permits fridge and scooter, includes morning solar, and forces the generator off. The generator also switches off at charge-time battery fullness.
-
-The next stage is review of `modelling_questions.md`, formal scenario generation and training. No learning performance is claimed.
+Supply priority has been removed. Total demand is served whenever available battery energy is sufficient. If total demand exceeds available energy, the battery is depleted, all appliances stop, and the RL agent receives a high penalty (-100). Fixed tasks are non-preemptible by choice; remaining time is preserved during an outage and resumes when energy is restored. Overnight permits fridge and scooter, includes morning solar, and forces the generator off. The generator also switches off at charge-time battery fullness.

@@ -1,0 +1,72 @@
+{
+  "status": "completed",
+  "invocation": {
+    "arguments": [],
+    "arguments_text": "",
+    "effective_arguments": [
+      "--train-episodes",
+      "100000",
+      "--test-cases",
+      "1000",
+      "--seed",
+      "42"
+    ],
+    "command": "python train_q_learning.py",
+    "effective_command": "python train_q_learning.py --train-episodes 100000 --test-cases 1000 --seed 42",
+    "python_executable": "/Users/rohanchinyajagadeesha/miniforge3/bin/python",
+    "invocation_type": "command_line"
+  },
+  "started_utc": "2026-10-01T23:56:18.888142+00:00",
+  "completed_utc": "2026-10-01T23:59:57.885267+00:00",
+  "python": "3.13.13",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "training_cases": 100000,
+  "evaluation_cases": 1000,
+  "scenario_sampling": "fresh_independent_day_per_episode",
+  "scenario_uses": 1,
+  "dataset_format": "jsonl.gz",
+  "training_episodes": 100000,
+  "training_updates": 2900000,
+  "seeds": {
+    "training_data": 42,
+    "evaluation_data": 43,
+    "agent": 44,
+    "random_baseline": 46
+  },
+  "q_table_entries": 17493,
+  "unique_states": 2820,
+  "single_visit_state_action_fraction": 0.2460984393757503,
+  "timings": {
+    "generation_and_dataset_write_seconds": 107.24664837506134,
+    "training_seconds": 106.18937604199164,
+    "evaluation_including_trace_write_seconds": 5.337523499852978,
+    "training_updates_per_second": 27309.699972747,
+    "total_seconds_before_manifest_write": 218.99614108295646
+  },
+  "evaluation_seconds_by_policy": {
+    "q_learning": 1.4172431669430807,
+    "rule_based": 1.2888059999095276,
+    "random": 1.3156487910309806,
+    "do_nothing": 1.3158255419693887
+  },
+  "source_sha256": {
+    "appliance_model.py": "428be38e85b66a6476a51e599e90da7ea2f690d8b906791bf8e2793dfcf6d860",
+    "check_model_structure.py": "dfea0e0a3c1d27f0e269d42bc3669e61ce8e1cfe57b3bb9375b717034c2d46e5",
+    "config_loader.py": "3a23684a518ec883d39fe46eecfc711320133b253028e1d8b7f78933d79b2e64",
+    "energy_system.py": "8ce3fea51c545bab52b68b65fc534b0c8286a3d0138612e589fea98c294354a4",
+    "q_learning_agent.py": "2ac0b3c918c3bc9317320d001c9c24b4ab6329e0cd9a32642349f7301a00f09e",
+    "scenario_generator.py": "12f931614f6837de783154c130c7168ff6e4598c5a567dca5994dd87f8534b9d",
+    "smart_home_environment.py": "5571cf25d6a26550072edff0e2637cb2b071fea05df0098be97b1f2723f1e102",
+    "solar_model.py": "82c6193f117eddf9def96868f9192e2e0727b9fa6cfc2736be0f4e3e4401dc46",
+    "state_action_model.py": "b24a29bbea88ac324e614aabc3373eed5beb83819a472703c333d007880d7d67",
+    "time_blocks.py": "b5effdb6e8e3ca7de6ee5524478886814aa92bf32d6c9ffafd3517475db5aa85",
+    "train_q_learning.py": "cb06b9d99d6ea25ee04187409925bd2090d3372065dd9027af7463639c39ef93"
+  },
+  "dataset_sha256": {
+    "training_cases.jsonl.gz": "7fcc3a07d5e2ab2bda9fa9ed084cb142b1f48a35d58e6778952a554be7f6a793",
+    "evaluation_cases.jsonl.gz": "c17b67f638b2021ab51f8f612ea957219c54e001923db07de66222b3ffe4d192"
+  },
+  "evaluation_exploration_epsilon": 0.0,
+  "evaluation_tie_break": "first valid action with maximal Q",
+  "limitation": "One training seed; compact state aliases physical histories; demand summaries use future realised powers."
+}
