@@ -189,9 +189,9 @@
     "missed_oven_cycle": -30.0,
     "scooter_shortfall_per_kwh": -20.0,
     "ac_heater_comfort_per_served_period": 2.0,
-    "oven_service_per_served_period": 6.0,
-    "laundry_service_per_served_period": 3.5999999999999996,
-    "dishwasher_service_per_served_period": 4.8,
+    "oven_service_per_served_period": 10.0,
+    "laundry_service_per_served_period": 6.0,
+    "dishwasher_service_per_served_period": 8.0,
     "battery_depleted_and_appliances_stop": -100.0
   },
   "q_learning_parameters": {

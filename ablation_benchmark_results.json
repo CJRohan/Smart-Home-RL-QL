@@ -1,0 +1,50 @@
+{
+  "solar_only": {
+    "q_learning": {
+      "mean_return": -891.1176995606116,
+      "daily_success": 0,
+      "generator_h": 0.0,
+      "unmet_kwh": 29.632681549805348,
+      "ac_hours": 4.6205,
+      "laundry": 1,
+      "dishwasher": 0.004,
+      "oven_cycles": 1.533,
+      "scooter_shortfall": 1.9101849780305842
+    },
+    "rule_based": {
+      "mean_return": -64.69264824871469,
+      "daily_success": 0.392,
+      "generator_h": 0.0,
+      "unmet_kwh": 1.604770266997319,
+      "ac_hours": 3.3605,
+      "laundry": 1,
+      "dishwasher": 0.95,
+      "oven_cycles": 2,
+      "scooter_shortfall": 0.1717324124357342
+    }
+  },
+  "generator_only": {
+    "q_learning": {
+      "mean_return": -140.0,
+      "daily_success": 0,
+      "generator_h": 0.0,
+      "unmet_kwh": 0.0,
+      "ac_hours": 0.0,
+      "laundry": 0,
+      "dishwasher": 0,
+      "oven_cycles": 0,
+      "scooter_shortfall": 2.0
+    },
+    "rule_based": {
+      "mean_return": 59.577,
+      "daily_success": 1,
+      "generator_h": 2.5465,
+      "unmet_kwh": 0.0,
+      "ac_hours": 0.7605,
+      "laundry": 1,
+      "dishwasher": 1,
+      "oven_cycles": 2,
+      "scooter_shortfall": 0.0
+    }
+  }
+}

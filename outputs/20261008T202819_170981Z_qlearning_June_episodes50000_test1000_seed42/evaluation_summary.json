@@ -1,0 +1,1368 @@
+{
+  "policies": {
+    "q_learning": {
+      "return_total": {
+        "mean": 30.744999999999994,
+        "sample_sd": 3.9443038083459703,
+        "median": 31.599999999999994,
+        "p10": 27.599999999999994,
+        "p90": 33.599999999999994,
+        "mean_ci95_normal": [
+          30.500529517166225,
+          30.989470482833763
+        ]
+      },
+      "generator_kwh": {
+        "mean": 9.1475,
+        "sample_sd": 1.7160823665222742,
+        "median": 10.0,
+        "p10": 7.5,
+        "p90": 12.5,
+        "mean_ci95_normal": [
+          9.04113611295902,
+          9.253863887040982
+        ]
+      },
+      "generator_runtime_hours": {
+        "mean": 1.8295,
+        "sample_sd": 0.3432164733044548,
+        "median": 2.0,
+        "p10": 1.5,
+        "p90": 2.5,
+        "mean_ci95_normal": [
+          1.808227222591804,
+          1.850772777408196
+        ]
+      },
+      "solar_kwh": {
+        "mean": 15.539837668708339,
+        "sample_sd": 0.22591814196689883,
+        "median": 15.527473545371109,
+        "p10": 15.253464299377155,
+        "p90": 15.842944543071926,
+        "mean_ci95_normal": [
+          15.525835117198312,
+          15.553840220218365
+        ]
+      },
+      "curtailed_solar_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "requested_kwh": {
+        "mean": 27.25077608357945,
+        "sample_sd": 1.2629200079502243,
+        "median": 26.865068036982798,
+        "p10": 26.038435611311264,
+        "p90": 29.289553099804984,
+        "mean_ci95_normal": [
+          27.172499490516124,
+          27.329052676642775
+        ]
+      },
+      "served_kwh": {
+        "mean": 27.249434020629895,
+        "sample_sd": 1.261799392264832,
+        "median": 26.865068036982798,
+        "p10": 26.038435611311264,
+        "p90": 29.289553099804984,
+        "mean_ci95_normal": [
+          27.17122688404634,
+          27.32764115721345
+        ]
+      },
+      "unmet_kwh": {
+        "mean": 0.0013420629495536616,
+        "sample_sd": 0.04243975683913226,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          -0.0012883804315715146,
+          0.003972506330678837
+        ]
+      },
+      "shortage_blocks": {
+        "mean": 0.001,
+        "sample_sd": 0.03162277660168379,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "mean_ci95_normal": [
+          -0.0009599999999999999,
+          0.00296
+        ]
+      },
+      "ac_fully_served_hours": {
+        "mean": 6.135,
+        "sample_sd": 0.5590953296063093,
+        "median": 6.0,
+        "p10": 5.5,
+        "p90": 7.0,
+        "mean_ci95_normal": [
+          6.100346912453917,
+          6.169653087546083
+        ]
+      },
+      "unseen_state_steps": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "unlearned_action_steps": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "refrigerator_unmet_kwh": {
+        "mean": 4.320588379295986e-05,
+        "sample_sd": 0.00136629001106308,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          -4.147764844124146e-05,
+          0.0001278894160271612
+        ]
+      },
+      "tv_pc_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "laundry_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "dishwasher_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "ac_heater_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "oven_unmet_kwh": {
+        "mean": 0.0011278454900177967,
+        "sample_sd": 0.035665605972049375,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          -0.0010827316704170849,
+          0.0033384226504526784
+        ]
+      },
+      "scooter_unmet_kwh": {
+        "mean": 0.00017101157574290484,
+        "sample_sd": 0.0054078608560198076,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          -0.00016417111271318867,
+          0.0005061942641989984
+        ]
+      },
+      "laundry_completed": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "dishwasher_completed": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "oven_cycles_completed": {
+        "mean": 2,
+        "sample_sd": 0.0,
+        "median": 2.0,
+        "p10": 2,
+        "p90": 2,
+        "mean_ci95_normal": [
+          2.0,
+          2.0
+        ]
+      },
+      "oven_all_cycles_completed": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "scooter_shortfall_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "final_battery_kwh": {
+        "mean": 2.4365679350616287,
+        "sample_sd": 1.0687286694857645,
+        "median": 2.005052216268955,
+        "p10": 1.1437984075692222,
+        "p90": 3.839267511574812,
+        "mean_ci95_normal": [
+          2.370327445854221,
+          2.5028084242690363
+        ]
+      },
+      "unseen_state_fraction": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "unlearned_action_fraction": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "scooter_full": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "all_daily_tasks_completed": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "daily_success": {
+        "mean": 0.999,
+        "sample_sd": 0.03162277660168379,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9943572970398398,
+          0.9998234581709429
+        ]
+      }
+    },
+    "rule_based": {
+      "return_total": {
+        "mean": 28.002999999999993,
+        "sample_sd": 1.5482209105899545,
+        "median": 28.599999999999994,
+        "p10": 25.599999999999994,
+        "p90": 30.599999999999994,
+        "mean_ci95_normal": [
+          27.907040273788134,
+          28.098959726211852
+        ]
+      },
+      "generator_kwh": {
+        "mean": 5.6675,
+        "sample_sd": 1.1065343050118999,
+        "median": 5.0,
+        "p10": 5.0,
+        "p90": 7.5,
+        "mean_ci95_normal": [
+          5.598916293226199,
+          5.736083706773802
+        ]
+      },
+      "generator_runtime_hours": {
+        "mean": 1.1335,
+        "sample_sd": 0.22130686100237995,
+        "median": 1.0,
+        "p10": 1.0,
+        "p90": 1.5,
+        "mean_ci95_normal": [
+          1.1197832586452396,
+          1.1472167413547603
+        ]
+      },
+      "solar_kwh": {
+        "mean": 15.539837668708339,
+        "sample_sd": 0.22591814196689883,
+        "median": 15.527473545371109,
+        "p10": 15.253464299377155,
+        "p90": 15.842944543071926,
+        "mean_ci95_normal": [
+          15.525835117198312,
+          15.553840220218365
+        ]
+      },
+      "curtailed_solar_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "requested_kwh": {
+        "mean": 21.123514978511587,
+        "sample_sd": 0.9206675583449432,
+        "median": 20.954195334093264,
+        "p10": 19.97035545802838,
+        "p90": 22.833473187573585,
+        "mean_ci95_normal": [
+          21.066451412048544,
+          21.18057854497463
+        ]
+      },
+      "served_kwh": {
+        "mean": 21.123514978511587,
+        "sample_sd": 0.9206675583449432,
+        "median": 20.954195334093264,
+        "p10": 19.97035545802838,
+        "p90": 22.833473187573585,
+        "mean_ci95_normal": [
+          21.066451412048544,
+          21.18057854497463
+        ]
+      },
+      "unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "shortage_blocks": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "ac_fully_served_hours": {
+        "mean": 3.6845,
+        "sample_sd": 0.40419441253327976,
+        "median": 3.5,
+        "p10": 3.0,
+        "p90": 4.5,
+        "mean_ci95_normal": [
+          3.65944777076207,
+          3.70955222923793
+        ]
+      },
+      "unseen_state_steps": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "unlearned_action_steps": {
+        "mean": 1.184,
+        "sample_sd": 0.7967300538945288,
+        "median": 1.0,
+        "p10": 0,
+        "p90": 2,
+        "mean_ci95_normal": [
+          1.1346181596479377,
+          1.2333818403520622
+        ]
+      },
+      "refrigerator_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "tv_pc_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "laundry_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "dishwasher_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "ac_heater_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "oven_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "scooter_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "laundry_completed": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "dishwasher_completed": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "oven_cycles_completed": {
+        "mean": 2,
+        "sample_sd": 0.0,
+        "median": 2.0,
+        "p10": 2,
+        "p90": 2,
+        "mean_ci95_normal": [
+          2.0,
+          2.0
+        ]
+      },
+      "oven_all_cycles_completed": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "scooter_shortfall_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "final_battery_kwh": {
+        "mean": 5.083822690196754,
+        "sample_sd": 0.7355908938403867,
+        "median": 4.875188189693917,
+        "p10": 4.28738841093087,
+        "p90": 6.401235022088107,
+        "mean_ci95_normal": [
+          5.038230294244705,
+          5.129415086148803
+        ]
+      },
+      "unseen_state_fraction": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "unlearned_action_fraction": {
+        "mean": 0.040827586206896554,
+        "sample_sd": 0.027473450134294097,
+        "median": 0.034482758620689655,
+        "p10": 0.0,
+        "p90": 0.06896551724137931,
+        "mean_ci95_normal": [
+          0.03912476412579096,
+          0.04253040828800215
+        ]
+      },
+      "scooter_full": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "all_daily_tasks_completed": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "daily_success": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      }
+    },
+    "random": {
+      "return_total": {
+        "mean": -35.6757077292217,
+        "sample_sd": 47.33091911398539,
+        "median": -28.882243042785376,
+        "p10": -74.48055039178627,
+        "p90": 13.110098423902315,
+        "mean_ci95_normal": [
+          -38.60930848894979,
+          -32.742106969493605
+        ]
+      },
+      "generator_kwh": {
+        "mean": 16.457975050040645,
+        "sample_sd": 3.2940207455787407,
+        "median": 16.455525941899527,
+        "p10": 12.065613851099682,
+        "p90": 20.752469031007692,
+        "mean_ci95_normal": [
+          16.253809529009498,
+          16.66214057107179
+        ]
+      },
+      "generator_runtime_hours": {
+        "mean": 3.291595010008129,
+        "sample_sd": 0.6588041491157481,
+        "median": 3.2911051883799054,
+        "p10": 2.4131227702199363,
+        "p90": 4.1504938062015375,
+        "mean_ci95_normal": [
+          3.2507619058018995,
+          3.3324281142143586
+        ]
+      },
+      "solar_kwh": {
+        "mean": 15.539837668708339,
+        "sample_sd": 0.22591814196689883,
+        "median": 15.527473545371109,
+        "p10": 15.253464299377155,
+        "p90": 15.842944543071926,
+        "mean_ci95_normal": [
+          15.525835117198312,
+          15.553840220218365
+        ]
+      },
+      "curtailed_solar_kwh": {
+        "mean": 3.462555102397407,
+        "sample_sd": 1.5691369092395047,
+        "median": 3.3866776302348454,
+        "p10": 1.4890169116728824,
+        "p90": 5.49168562695286,
+        "mean_ci95_normal": [
+          3.3652989891582656,
+          3.5598112156365485
+        ]
+      },
+      "requested_kwh": {
+        "mean": 27.528946053503024,
+        "sample_sd": 4.802227168640199,
+        "median": 27.018595258759667,
+        "p10": 22.256972844028216,
+        "p90": 32.797004341888254,
+        "mean_ci95_normal": [
+          27.231300929891912,
+          27.826591177114135
+        ]
+      },
+      "served_kwh": {
+        "mean": 26.745969729215435,
+        "sample_sd": 3.728488008762324,
+        "median": 26.731270683232413,
+        "p10": 22.111469619624213,
+        "p90": 31.619647343386937,
+        "mean_ci95_normal": [
+          26.514875648223665,
+          26.977063810207206
+        ]
+      },
+      "unmet_kwh": {
+        "mean": 0.7829763242875871,
+        "sample_sd": 3.4354673420520747,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.5700438523786044,
+          0.9959087961965698
+        ]
+      },
+      "shortage_blocks": {
+        "mean": 0.073,
+        "sample_sd": 0.3461080623024994,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "mean_ci95_normal": [
+          0.05154800004890215,
+          0.09445199995109785
+        ]
+      },
+      "ac_fully_served_hours": {
+        "mean": 6.994,
+        "sample_sd": 1.3380038319280907,
+        "median": 7.0,
+        "p10": 5.5,
+        "p90": 8.5,
+        "mean_ci95_normal": [
+          6.911069663312253,
+          7.076930336687747
+        ]
+      },
+      "unseen_state_steps": {
+        "mean": 0.001,
+        "sample_sd": 0.03162277660168379,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "mean_ci95_normal": [
+          -0.0009599999999999999,
+          0.00296
+        ]
+      },
+      "unlearned_action_steps": {
+        "mean": 0.014,
+        "sample_sd": 0.13349839632677923,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "mean_ci95_normal": [
+          0.005725683671099425,
+          0.022274316328900576
+        ]
+      },
+      "refrigerator_unmet_kwh": {
+        "mean": 0.04256382042940476,
+        "sample_sd": 0.18257296447849264,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.031247830853752132,
+          0.053879810005057385
+        ]
+      },
+      "tv_pc_unmet_kwh": {
+        "mean": 0.0011062192649597866,
+        "sample_sd": 0.011352877027557266,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0004025606566632771,
+          0.0018098778732562962
+        ]
+      },
+      "laundry_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "dishwasher_unmet_kwh": {
+        "mean": 0.6837795783210419,
+        "sample_sd": 3.1140073999024587,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.4907714000485548,
+          0.8767877565935289
+        ]
+      },
+      "ac_heater_unmet_kwh": {
+        "mean": 0.020429644374750262,
+        "sample_sd": 0.20632060265741442,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0076417609354763015,
+          0.03321752781402422
+        ]
+      },
+      "oven_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "scooter_unmet_kwh": {
+        "mean": 0.03509706189743043,
+        "sample_sd": 0.20693469463703382,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.022271116642927063,
+          0.04792300715193379
+        ]
+      },
+      "laundry_completed": {
+        "mean": 1,
+        "sample_sd": 0.0,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9961731014136095,
+          1.0
+        ]
+      },
+      "dishwasher_completed": {
+        "mean": 0.933,
+        "sample_sd": 0.25014710386805117,
+        "median": 1.0,
+        "p10": 1,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.9157875981239373,
+          0.9468983077002487
+        ]
+      },
+      "oven_cycles_completed": {
+        "mean": 1.028,
+        "sample_sd": 0.716749419064801,
+        "median": 1.0,
+        "p10": 0,
+        "p90": 2,
+        "mean_ci95_normal": [
+          0.9835754107533933,
+          1.0724245892466069
+        ]
+      },
+      "oven_all_cycles_completed": {
+        "mean": 0.271,
+        "sample_sd": 0.4446985009607709,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.24436624773932128,
+          0.2993864718132457
+        ]
+      },
+      "scooter_shortfall_kwh": {
+        "mean": 0.5703078814570203,
+        "sample_sd": 0.5772442119841887,
+        "median": 0.6369387072642029,
+        "p10": 0.0,
+        "p90": 1.3632109930854757,
+        "mean_ci95_normal": [
+          0.5345299145270459,
+          0.6060858483869946
+        ]
+      },
+      "final_battery_kwh": {
+        "mean": 6.398197465403603,
+        "sample_sd": 2.548727432725709,
+        "median": 7.156179784331833,
+        "p10": 2.4917017680246527,
+        "p90": 9.130385362421286,
+        "mean_ci95_normal": [
+          6.240225702485214,
+          6.556169228321993
+        ]
+      },
+      "unseen_state_fraction": {
+        "mean": 3.4482758620689657e-05,
+        "sample_sd": 0.001090440572471855,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          -3.310344827586209e-05,
+          0.00010206896551724141
+        ]
+      },
+      "unlearned_action_fraction": {
+        "mean": 0.0004827586206896552,
+        "sample_sd": 0.004603392976785491,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.00019743736796894564,
+          0.0007680798734103647
+        ]
+      },
+      "scooter_full": {
+        "mean": 0.478,
+        "sample_sd": 0.4997657108743714,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.4471830669360443,
+          0.5089853166017569
+        ]
+      },
+      "all_daily_tasks_completed": {
+        "mean": 0.135,
+        "sample_sd": 0.34189456253630574,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.11521104013883013,
+          0.15758259582923498
+        ]
+      },
+      "daily_success": {
+        "mean": 0.135,
+        "sample_sd": 0.34189456253630574,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 1,
+        "proportion_ci95_wilson": [
+          0.11521104013883013,
+          0.15758259582923498
+        ]
+      }
+    },
+    "do_nothing": {
+      "return_total": {
+        "mean": -140.0,
+        "sample_sd": 0.0,
+        "median": -140.0,
+        "p10": -140.0,
+        "p90": -140.0,
+        "mean_ci95_normal": [
+          -140.0,
+          -140.0
+        ]
+      },
+      "generator_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "generator_runtime_hours": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "solar_kwh": {
+        "mean": 15.539837668708339,
+        "sample_sd": 0.22591814196689883,
+        "median": 15.527473545371109,
+        "p10": 15.253464299377155,
+        "p90": 15.842944543071926,
+        "mean_ci95_normal": [
+          15.525835117198312,
+          15.553840220218365
+        ]
+      },
+      "curtailed_solar_kwh": {
+        "mean": 8.719938331104496,
+        "sample_sd": 0.227079509880934,
+        "median": 8.705871475668388,
+        "p10": 8.432738423827058,
+        "p90": 9.020732092945941,
+        "mean_ci95_normal": [
+          8.705863797265398,
+          8.734012864943594
+        ]
+      },
+      "requested_kwh": {
+        "mean": 2.620557962799939,
+        "sample_sd": 0.07506835607822773,
+        "median": 2.6204003943561833,
+        "p10": 2.520000870645207,
+        "p90": 2.719320514587992,
+        "mean_ci95_normal": [
+          2.615905177885869,
+          2.6252107477140094
+        ]
+      },
+      "served_kwh": {
+        "mean": 2.620557962799939,
+        "sample_sd": 0.07506835607822773,
+        "median": 2.6204003943561833,
+        "p10": 2.520000870645207,
+        "p90": 2.719320514587992,
+        "mean_ci95_normal": [
+          2.615905177885869,
+          2.6252107477140094
+        ]
+      },
+      "unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "shortage_blocks": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "ac_fully_served_hours": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "unseen_state_steps": {
+        "mean": 14,
+        "sample_sd": 0.0,
+        "median": 14.0,
+        "p10": 14,
+        "p90": 14,
+        "mean_ci95_normal": [
+          14.0,
+          14.0
+        ]
+      },
+      "unlearned_action_steps": {
+        "mean": 19,
+        "sample_sd": 0.0,
+        "median": 19.0,
+        "p10": 19,
+        "p90": 19,
+        "mean_ci95_normal": [
+          19.0,
+          19.0
+        ]
+      },
+      "refrigerator_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "tv_pc_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "laundry_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "dishwasher_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "ac_heater_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "oven_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "scooter_unmet_kwh": {
+        "mean": 0.0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0.0,
+        "p90": 0.0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "laundry_completed": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "proportion_ci95_wilson": [
+          0.0,
+          0.003826898586390522
+        ]
+      },
+      "dishwasher_completed": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "proportion_ci95_wilson": [
+          0.0,
+          0.003826898586390522
+        ]
+      },
+      "oven_cycles_completed": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "mean_ci95_normal": [
+          0.0,
+          0.0
+        ]
+      },
+      "oven_all_cycles_completed": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "proportion_ci95_wilson": [
+          0.0,
+          0.003826898586390522
+        ]
+      },
+      "scooter_shortfall_kwh": {
+        "mean": 2.0,
+        "sample_sd": 0.0,
+        "median": 2.0,
+        "p10": 2.0,
+        "p90": 2.0,
+        "mean_ci95_normal": [
+          2.0,
+          2.0
+        ]
+      },
+      "final_battery_kwh": {
+        "mean": 9.199341374803904,
+        "sample_sd": 0.07019252412910922,
+        "median": 9.199317531220721,
+        "p10": 9.10368255615077,
+        "p90": 9.296787187520366,
+        "mean_ci95_normal": [
+          9.194990797085003,
+          9.203691952522805
+        ]
+      },
+      "unseen_state_fraction": {
+        "mean": 0.4827586206896552,
+        "sample_sd": 0.0,
+        "median": 0.4827586206896552,
+        "p10": 0.4827586206896552,
+        "p90": 0.4827586206896552,
+        "mean_ci95_normal": [
+          0.4827586206896552,
+          0.4827586206896552
+        ]
+      },
+      "unlearned_action_fraction": {
+        "mean": 0.6551724137931034,
+        "sample_sd": 0.0,
+        "median": 0.6551724137931034,
+        "p10": 0.6551724137931034,
+        "p90": 0.6551724137931034,
+        "mean_ci95_normal": [
+          0.6551724137931034,
+          0.6551724137931034
+        ]
+      },
+      "scooter_full": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "proportion_ci95_wilson": [
+          0.0,
+          0.003826898586390522
+        ]
+      },
+      "all_daily_tasks_completed": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "proportion_ci95_wilson": [
+          0.0,
+          0.003826898586390522
+        ]
+      },
+      "daily_success": {
+        "mean": 0,
+        "sample_sd": 0.0,
+        "median": 0.0,
+        "p10": 0,
+        "p90": 0,
+        "proportion_ci95_wilson": [
+          0.0,
+          0.003826898586390522
+        ]
+      }
+    }
+  },
+  "paired_return_difference_qlearning_minus_baseline": {
+    "rule_based": {
+      "mean": 2.742,
+      "sample_sd": 4.130920054963603,
+      "median": 3.0,
+      "p10": 0.0,
+      "p90": 6.0,
+      "mean_ci95_normal": [
+        2.4859629223672424,
+        2.9980370776327576
+      ]
+    },
+    "random": {
+      "mean": 66.42070772922169,
+      "sample_sd": 47.17003125070077,
+      "median": 59.572396830528724,
+      "p10": 18.81483860887441,
+      "p90": 106.08055039178626,
+      "mean_ci95_normal": [
+        63.4970789025724,
+        69.34433655587098
+      ]
+    },
+    "do_nothing": {
+      "mean": 170.745,
+      "sample_sd": 3.9443038083459707,
+      "median": 171.6,
+      "p10": 167.6,
+      "p90": 173.6,
+      "mean_ci95_normal": [
+        170.50052951716623,
+        170.98947048283378
+      ]
+    }
+  },
+  "uncertainty_note": "Intervals across held-out days for ONE fitted policy, not across training seeds. Continuous metrics use normal-approximation mean intervals (unreliable for small samples); binary completion/success rates use Wilson intervals."
+}
