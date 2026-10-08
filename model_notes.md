@@ -9,6 +9,7 @@ See `training_plan.md` for the reproducible training pilot, saved outputs and ev
 - London supplied solar table, June first; 10 square metre panel.
 - Battery capacity 10 kWh, initially 5 kWh; generator 5 kW.
 - Generator cost -10 per operating hour, missed oven cycle -30, served AC comfort +2 per period, shortage penalty -100 per affected block.
+- Immediate per-period service rewards: oven +10, laundry +6, dishwasher +8 per supplied period.
 - Battery upper bounds: 1, 2.5, 4, 6, 10 kWh.
 - Mandatory-demand upper bounds: 0.5, 1, 1.5, 2, 100 kWh.
 - Future-demand upper bounds: 1, 1.5, 2, 3, 4.5, 100 kWh.

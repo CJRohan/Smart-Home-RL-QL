@@ -69,8 +69,11 @@ def read_cases(path):
 
 
 def file_sha256(path):
+    h = hashlib.sha256()
     with path.open("rb") as stream:
-        return hashlib.file_digest(stream, "sha256").hexdigest()
+        while chunk := stream.read(65536):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def greedy_action(agent, state, actions):

@@ -1,0 +1,34 @@
+{
+  "status": "completed",
+  "invocation": {
+    "arguments": [],
+    "arguments_text": "",
+    "effective_arguments": [
+      "--train-episodes",
+      "100000",
+      "--test-cases",
+      "1000",
+      "--seed",
+      "42"
+    ],
+    "command": "python train_q_learning.py",
+    "effective_command": "python train_q_learning.py --train-episodes 100000 --test-cases 1000 --seed 42",
+    "python_executable": "/Library/Developer/CommandLineTools/usr/bin/python3",
+    "invocation_type": "command_line"
+  },
+  "started_utc": "2026-10-08T19:26:58.580555+00:00",
+  "completed_utc": "2026-10-08T19:31:00.000000+00:00",
+  "python": "3.9.6",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "training_cases": 100000,
+  "evaluation_cases": 1000,
+  "training_episodes": 100000,
+  "seeds": {
+    "agent": 42,
+    "training_data": 43,
+    "evaluation_data": 44,
+    "random_baseline": 45
+  },
+  "evaluation_exploration_epsilon": 0.0,
+  "evaluation_tie_break": "first valid action with maximal Q"
+}

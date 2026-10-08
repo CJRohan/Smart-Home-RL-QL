@@ -102,9 +102,9 @@ The environment enforces these physical rules:
 
 The model maximises a cumulative return that rewards desired behaviour and penalises undesired behaviour:
 
-`maximise: household comfort + completed tasks - generator-use cost - missed-deadline cost - battery-depletion penalty`
+`maximise: appliance service rewards + AC comfort - generator-use cost - missed-deadline cost - battery-depletion penalty`
 
-The numerical reward values are configured in `config.json`.
+To resolve temporal credit assignment, required fixed-duration tasks (oven, laundry, dishwasher) yield immediate per-period service rewards whenever active and fully supplied, while retaining midnight penalties if deadlines are missed. The numerical reward values are configured in `config.json`.
 
 ## 9. Composite action dispatch
 

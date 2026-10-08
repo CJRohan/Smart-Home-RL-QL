@@ -236,6 +236,12 @@ class SmartHomeEnvironment:
         )
         if active["ac_heater"]:
             reward += values["ac_heater_comfort_per_served_period"]
+        if active.get("oven"):
+            reward += values.get("oven_service_per_served_period", 0.0)
+        if active.get("laundry"):
+            reward += values.get("laundry_service_per_served_period", 0.0)
+        if active.get("dishwasher"):
+            reward += values.get("dishwasher_service_per_served_period", 0.0)
         if power_unavailable:
             reward += values["battery_depleted_and_appliances_stop"]
         if row["is_overnight"]:
